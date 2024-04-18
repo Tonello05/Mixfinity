@@ -54,11 +54,8 @@ h1 {
 	color: white;
 	border: none;
 	border-radius: 5px;
+	margin: 2px;
 	cursor: pointer;
-}
-
-#table_sound td {
-	padding: 5px;
 }
 
 /* Responsive styling */
