@@ -99,13 +99,18 @@ aside .sidebar div {
 	position: relative;
 	top: 1.5rem;
 	width: 100%;
-	overflow-y: auto;
+	overflow-y: hidden;
+	/* padding-right: 15px; */
+}
+
+.track-container {
+	height: 85vh;
 	padding-right: 15px;
+	overflow-y: auto;
 }
 
 .song-controls {
 	display: flex;
-	/* justify-content: space-between; */
 	border-radius: 15px;
 	margin-bottom: 20px;
 	background-color: rgb(20, 20, 20);
@@ -117,18 +122,30 @@ aside .sidebar div {
 	padding: 0 5px 0 5px;
 }
 
-.controls {
+.song-controls .bar-left {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	width: 10%;
 }
 
-.timebar {
+.song-controls .bar-center {
 	width: 80%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.volume-bar-container {
+.song-controls .bar-center span {
+	margin: 0 5px 0 5px;
+	border-radius: 5px;
+}
+
+.song-controls .bar-center .selected {
+	background-color: rgb(75, 75, 75);
+}
+
+.song-controls .bar-right {
 	display: flex;
 	align-items: center;
 	justify-content: space-evenly;
@@ -150,7 +167,7 @@ aside .sidebar div {
 	height: 200px;
 }
 
-.fullscreen {
+.edit {
 	height: 790px;
 }
 
@@ -166,4 +183,16 @@ aside .sidebar div {
 
 .track-editor h3 {
 	padding: 10px 0 0 10px;
+}
+
+.track-editor #track {
+	height: 100%;
+}
+
+#note {
+	position: relative;
+	background-color: rgb(143, 3, 143);
+	height: 16px;
+	width: 60px;
+	border-radius: 5px;
 }

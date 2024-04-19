@@ -50,7 +50,7 @@
 
 		<div class="main-container">
 			<div class="song-controls">
-				<div class="controls">
+				<div class="bar-left">
 					<a class="interactable" href="">
 						<span class="material-symbols-rounded">keyboard_double_arrow_left</span>
 					</a>
@@ -67,10 +67,13 @@
 						<span class="material-symbols-rounded">double_arrow</span>
 					</a>
 				</div>
-				<div class="timebar">
-
+				<div class="bar-center">
+					<span class="material-symbols-rounded interactable">arrow_selector_tool</span>
+					<span class="material-symbols-rounded interactable selected">music_note</span>
+					<span class="material-symbols-rounded interactable">width</span>
+					<span class="material-symbols-rounded interactable">delete</span>
 				</div>
-				<div class="volume-bar-container">
+				<div class="bar-right">
 					<a href="">
 						<span class="material-symbols-rounded interactable">volume_up</span>
 					</a>
@@ -78,22 +81,30 @@
 				</div>
 			</div>
 
-			<div class="track-editor fullscreen">
-				<div class="track-editor-top">
-					<h3 class="interactable">Instrument 1</h3>
-					<span class="material-symbols-rounded interactable">open_in_full</span>
+			<div class="track-container">
+				<div class="track-editor edit">
+					<div class="track-editor-top">
+						<h3 class="interactable">Instrument 1</h3>
+						<span class="material-symbols-rounded">edit</span>
+						<span class="material-symbols-rounded interactable">close</span>
+					</div>
+					<div id="track">
+						<div id="note"></div>
+					</div>
 				</div>
-			</div>
-			<div class="track-editor">
-				<div class="track-editor-top">
-					<h3 class="interactable">Instrument 2</h3>
-					<span class="material-symbols-rounded interactable">open_in_full</span>
+				<div hidden class="track-editor">
+					<div class="track-editor-top">
+						<h3 class="interactable">Instrument 2</h3>
+						<span class="material-symbols-rounded">edit</span>
+						<span class="material-symbols-rounded interactable">close</span>
+					</div>
 				</div>
-			</div>
-			<div class="track-editor">
-				<div class="track-editor-top">
-					<h3 class="interactable">Instrument 3</h3>
-					<span class="material-symbols-rounded interactable">open_in_full</span>
+				<div hidden class="track-editor">
+					<div class="track-editor-top">
+						<h3 class="interactable">Instrument 3</h3>
+						<span class="material-symbols-rounded">edit</span>
+						<span class="material-symbols-rounded interactable">close</span>
+					</div>
 				</div>
 			</div>
 		</div>

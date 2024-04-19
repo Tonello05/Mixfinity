@@ -10,7 +10,7 @@ const AMSynth = new Tone.AMSynth().toDestination();
 const duoSynth = new Tone.DuoSynth().toDestination();
 const FMSynth = new Tone.FMSynth().toDestination();
 const guitarSynth = SampleLibrary.load({
-    instruments:"guitar-acoustic"
+    instruments:"piano"
 })
 
 music_buttons.addEventListener("click", (event) => {

@@ -4,18 +4,32 @@ const instument2 = document.getElementById("instument2")
 
 synth.volume.value = -13
 
-instument1.addEventListener("click", () => {
-	if (Tone.context.state != "running") {
-		Tone.start()
-	}
+// Track variables
+let tempo = 60
+let noteHeigth = 12
 
-	synth.triggerAttackRelease("C4", .25)
-})
+// Track test
+let track = document.getElementById("track")
+let trackHeight = track.clientHeight
+let trackWidth = track.clientWidth
 
-instument2.addEventListener("click", () => {
-	if (Tone.context.state != "running") {
-		Tone.start()
-	}
+// Note test
+let note = document.getElementById("note")
 
-	synth.triggerAttackRelease("B5", .25)
-})
+function clamp(value, min, max) {
+	return Math.max(Math.min(value, max), min)
+}
+
+function handleMouseMovement(event) {
+	let divRect = track.getBoundingClientRect()
+
+	let gridX =  Math.floor(clamp((event.clientX - divRect.left) / tempo, 0, trackWidth))
+	let gridY = Math.floor(clamp((event.clientY - divRect.top) / noteHeigth, 0, trackHeight))
+
+	console.log(gridX + " | " + gridY);
+	note.style.left = (gridX * tempo) + "px"
+	note.style.top = (gridY * noteHeigth) + "px"
+}
+
+track.addEventListener("mousemove", handleMouseMovement)
+console.log("Track dimensions: " + trackWidth + " | " + trackHeight);
