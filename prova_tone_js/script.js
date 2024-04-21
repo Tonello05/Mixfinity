@@ -5,7 +5,9 @@ const table_sound = document.getElementById("table_sound")
 const start_song = document.getElementById("start_song")
 const play_from_file = document.getElementById("play_from_file")
 
-//synthesizer initialization
+const player = []
+
+//synthesizers initialization
 const synth = new Tone.Synth().toDestination();
 const metalSynth = new Tone.MetalSynth().toDestination();
 const AMSynth = new Tone.AMSynth().toDestination();
@@ -93,23 +95,24 @@ play_from_file.addEventListener("click", () =>{
 //play music from JSON file
 function readAndPlaySong(obj) {
 
-    //TODO: fix this code (it try to start playng notes before the samplelibrary is loaded)
+    //TODO: fix this code (it start playng notes before the samplelibrary is loaded)
 
     for (let index = 0; index < obj.tracks.length; index++) {
-        const track = obj.tracks[index];
-        const player = SampleLibrary.load({
+        const track = obj.tracks[index]
+        player[index] = SampleLibrary.load({
             instruments: track.instrument
         })
-
-        obj.tracks[index].notes.forEach(element => {
-            console.log("prova")
-            const arr = element.split(";")
-            player.triggerAttackRelease(arr[0],arr[1],arr[2])
-        
-        });
-        
+        player[index].toMaster()
+        console.log(player[index])
+    
     }
+    
+    for (let index = 0; index < obj.tracks.length; index++) {
+        obj.tracks[index].notes.forEach(element => {
 
+            const arr = element.split(";");
 
+            player[index].triggerAttack(arr[0], arr[1], arr[2]);
+        });
+    }   
 }
-
