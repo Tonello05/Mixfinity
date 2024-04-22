@@ -72,7 +72,7 @@ aside {
 	height: 100vh;
 }
 
-aside .sidebar {
+aside .instrument-bar {
 	display: flex;
 	flex-direction: column;
 	background-color: rgb(20, 20, 20);
@@ -84,7 +84,7 @@ aside .sidebar {
 	overflow-y: auto;
 }
 
-aside .sidebar div {
+aside .instrument-bar div {
 	display: flex;
 	align-items: center;
 	/* color: ; */
@@ -103,7 +103,7 @@ aside .sidebar div {
 	/* padding-right: 15px; */
 }
 
-.track-container {
+#track-container {
 	height: 85vh;
 	padding-right: 15px;
 	overflow-y: auto;
@@ -185,12 +185,14 @@ aside .sidebar div {
 	padding: 10px 0 0 10px;
 }
 
-.track-editor #track {
-	height: 100%;
+.track-editor .track {
+	position: relative;
+	height: 95%;
+	overflow-y: hidden;
 }
 
-#note {
-	position: relative;
+.note {
+	position: absolute;
 	background-color: rgb(143, 3, 143);
 	height: 16px;
 	width: 60px;

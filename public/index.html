@@ -8,7 +8,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 	<link rel="stylesheet" href="style.css">
-	<title>ReMix Tape - Test</title>
+	<title>Mixfinity</title>
 </head>
 <body>
 	<header>
@@ -21,36 +21,38 @@
 		<div class="final-toolbar">
 			<a class="interactable" href="">Credits</a>
 			<a class="interactable" href="">Publish</a>
+			<a class="interactable" href="">User</a>
 		</div>
 	</header>
 
 	<div class="container">
-		<!-- Side bar -->
+		<!-- Instrument list -->
 		<aside>
-			<div class="sidebar">
-				<div class="interactable" id="instument1">
+			<div class="instrument-bar">
+				<div class="interactable instrument" id="Instrument 1">
 					<span class="material-symbols-rounded">music_note</span>
 					<h3>Instrument 1</h3>
 				</div>
-				<div class="interactable" id="instument2">
+				<div class="interactable instrument" id="Instrument 2">
 					<span class="material-symbols-rounded">music_note</span>
 					<h3>Instrument 2</h3>
 				</div>
-				<div class="interactable" id="instument3">
+				<div class="interactable instrument" id="Instrument 3">
 					<span class="material-symbols-rounded">music_note</span>
 					<h3>Instrument 3</h3>
 				</div>
-				<div class="interactable" id="instument4">
+				<div class="interactable instrument" id="Instrument 4">
 					<span class="material-symbols-rounded">music_note</span>
 					<h3>Instrument 4</h3>
 				</div>
 			</div>
 		</aside>
-		<!-- End Side bar -->
+		<!-- End instrument list -->
 
 		<div class="main-container">
 			<div class="song-controls">
 				<div class="bar-left">
+					<!-- Music controls -->
 					<a class="interactable" href="">
 						<span class="material-symbols-rounded">keyboard_double_arrow_left</span>
 					</a>
@@ -66,46 +68,35 @@
 					<a class="interactable" href="">
 						<span class="material-symbols-rounded">double_arrow</span>
 					</a>
+					<!-- End music controls -->
 				</div>
 				<div class="bar-center">
-					<span class="material-symbols-rounded interactable">arrow_selector_tool</span>
-					<span class="material-symbols-rounded interactable selected">music_note</span>
-					<span class="material-symbols-rounded interactable">width</span>
-					<span class="material-symbols-rounded interactable">delete</span>
+					<!-- Track editor controls -->
+					<span id="track-mode-select" class="material-symbols-rounded interactable">arrow_selector_tool</span>
+					<span id="track-mode-add" class="material-symbols-rounded interactable selected">music_note</span>
+					<span id="track-mode-resize" class="material-symbols-rounded interactable">width</span>
+					<span id="track-mode-remove" class="material-symbols-rounded interactable">delete</span>
+					<!-- End track editor controls -->
 				</div>
 				<div class="bar-right">
+					<!-- Volume -->
 					<a href="">
 						<span class="material-symbols-rounded interactable">volume_up</span>
 					</a>
 					<div class="interactable" id="volume-bar"></div>
+					<!-- End volume -->
 				</div>
 			</div>
 
-			<div class="track-container">
-				<div class="track-editor edit">
+			<div id="track-container">
+				<!-- <div class="track-editor">
 					<div class="track-editor-top">
 						<h3 class="interactable">Instrument 1</h3>
-						<span class="material-symbols-rounded">edit</span>
-						<span class="material-symbols-rounded interactable">close</span>
+						<span class="material-symbols-rounded interactable edit-track">edit</span>
+						<span class="material-symbols-rounded interactable close-track">close</span>
 					</div>
-					<div id="track">
-						<div id="note"></div>
-					</div>
-				</div>
-				<div hidden class="track-editor">
-					<div class="track-editor-top">
-						<h3 class="interactable">Instrument 2</h3>
-						<span class="material-symbols-rounded">edit</span>
-						<span class="material-symbols-rounded interactable">close</span>
-					</div>
-				</div>
-				<div hidden class="track-editor">
-					<div class="track-editor-top">
-						<h3 class="interactable">Instrument 3</h3>
-						<span class="material-symbols-rounded">edit</span>
-						<span class="material-symbols-rounded interactable">close</span>
-					</div>
-				</div>
+					<div id="track"></div>
+				</div> -->
 			</div>
 		</div>
 	</div>
