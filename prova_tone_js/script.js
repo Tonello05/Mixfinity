@@ -1,11 +1,12 @@
 import { SampleLibrary } from "./tonejs-instruments-master/tonejs-instruments-master/Tonejs-Instruments.js";
-
 const music_buttons = document.getElementById("music_buttons")
 const table_sound = document.getElementById("table_sound")
 const start_song = document.getElementById("start_song")
 const play_from_file = document.getElementById("play_from_file")
+const download_music = document.getElementById("download_music")
 
-const player = []
+var player = []
+var parts = []
 
 //synthesizers initialization
 const synth = new Tone.Synth().toDestination();
@@ -43,6 +44,35 @@ music_buttons.addEventListener("click", (event) => {
     
 })
 
+download_music.addEventListener("click", () => {
+    
+    let txt_json = '{ "tracks": ' +
+    '[' +
+       '{' +
+           '"instrument": "piano",' +
+           '"notes": [' +
+               '"A1;4n;0",' +
+               '"A2;4n;1",' +
+               '"A3;4n;2"'  +
+           ']' +
+       '},' +
+       '{' +
+           '"instrument": "flute",' +
+           '"notes": [' +
+               '"A4;1n;3",' +
+               '"A2;1n;4",' +
+               '"A3;1n;5"' +
+           ']' +
+
+       '}' +
+   ']' +
+'}'
+
+const json_obj = JSON.parse(txt_json)
+
+    
+    fromJsonToWebm(json_obj)
+})
 
 table_sound.addEventListener("click", (event) => {
 
@@ -76,43 +106,151 @@ play_from_file.addEventListener("click", () =>{
             '{' +
                 '"instrument": "flute",' +
                 '"notes": [' +
-                    '"A1;2n;0",' +
-                    '"A2;2n;0.5",' +
-                    '"A3;2n;1"' +
+                    '"A4;1n;3",' +
+                    '"A2;1n;4",' +
+                    '"A3;1n;5"' +
                 ']' +
     
             '}' +
         ']' +
     '}'
 
-    const json_obs = JSON.parse(txt_json)
+    const json_obj = JSON.parse(txt_json)
 
-    readAndPlaySong(json_obs)
+    loadInstruments(json_obj)
+    loadNotes(json_obj)
+    setTimeout(() => {
+        playSong(json_obj)
+    }, 1000);
+
 
 })
 
-
-//play music from JSON file
-function readAndPlaySong(obj) {
-
-    //TODO: fix this code (it start playng notes before the samplelibrary is loaded)
-
+function loadInstruments(obj){
     for (let index = 0; index < obj.tracks.length; index++) {
-        const track = obj.tracks[index]
+        let track = obj.tracks[index]
         player[index] = SampleLibrary.load({
             instruments: track.instrument
         })
-        player[index].toMaster()
-        console.log(player[index])
-    
+        player[index].toDestination()
     }
-    
-    for (let index = 0; index < obj.tracks.length; index++) {
-        obj.tracks[index].notes.forEach(element => {
-
-            const arr = element.split(";");
-
-            player[index].triggerAttack(arr[0], arr[1], arr[2]);
-        });
-    }   
 }
+//play music from JSON file
+function playSong(obj) {
+    for (let index = 0; index < obj.tracks.length; index++) {
+        parts[index].start(0)
+        Tone.Transport.start()
+    }   
+    
+}
+
+function loadNotes(obj){
+
+    for (let index = 0; index < obj.tracks.length; index++) {
+
+        let arrayNotes = []
+        for (let index1 = 0; index1 < obj.tracks[index].notes.length; index1++) {
+            let element = obj.tracks[index].notes[index1]
+            let tmpArr = element.split(";")
+            arrayNotes[index1] = {note : tmpArr[0], duration : tmpArr[1], time: tmpArr[2]}
+            
+        }
+        
+        parts[index] = new Tone.Part(((time, value) =>{
+
+            player[index].triggerAttackRelease(value.note, value.duration, time)
+
+        }), arrayNotes
+    )
+
+    console.log(arrayNotes)
+
+    }  
+
+
+}
+
+
+
+function fromJsonToWebm(obj) {
+    
+    let recorder = new Tone.Recorder();
+    recorder.start()
+    loadInstruments(obj)
+    setTimeout(() => {
+        connectInstrumentsToRecorder(obj, recorder)
+        for (let index = 0; index < obj.tracks.length; index++) {
+
+            let arrayNotes = []
+            for (let index1 = 0; index1 < obj.tracks[index].notes.length; index1++) {
+                let element = obj.tracks[index].notes[index1]
+                let tmpArr = element.split(";")
+                player[index].triggerAttackRelease(tmpArr[0], tmpArr[1], tmpArr[2])
+            }
+        }
+    }, 1000);
+
+    // wait for the notes to end and stop the recording
+    setTimeout(async () => {
+        // the recorded audio is returned as a blob
+        console.log("prova");
+        let recording = await recorder.stop();
+        
+        convertWebmToMp3AndDownload(recording)
+
+    }, 4000);
+
+
+
+
+}
+
+function connectInstrumentsToRecorder(obj, recorder){
+    for (let index = 0; index < obj.tracks.length; index++) {
+        
+        player[index].connect(recorder)
+    }
+}
+
+
+async function convertWebmToMp3AndDownload(webmBlob) {
+    const { createWorker } = FFmpeg;
+    const ffmpeg = createWorker({ logger: console });
+
+    // Load ffmpeg
+    await ffmpeg.load();
+
+    // Input and output file names
+    const inputName = 'input.webm';
+    const outputName = 'output.mp3';
+
+    try {
+        // Write WebM file to virtual file system
+        await ffmpeg.write(inputName, await (await fetch(webmBlob)).arrayBuffer());
+
+        // Run ffmpeg command to convert WebM to MP3
+        await ffmpeg.run('-i', inputName, outputName);
+
+        // Read the output MP3 file from virtual file system
+        const mp3Data = await ffmpeg.read(outputName);
+        const mp3Blob = new Blob([mp3Data.buffer], { type: 'audio/mp3' });
+
+        // Create a temporary link to trigger the download
+        const url = URL.createObjectURL(mp3Blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'converted.mp3';
+        document.body.appendChild(link);
+        link.click();
+
+        // Clean up
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error converting file:', error);
+    } finally {
+        // Terminate ffmpeg worker
+        await ffmpeg.terminate();
+    }
+}
+
+  

@@ -1,0 +1,55 @@
+body{
+    background-color: black;
+}
+
+.logo{
+
+    display: flex;
+    justify-content: center;
+    margin-top: 2%;
+
+}
+
+.logo img{
+    width: 50%;
+    height: auto;
+}   
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0px;
+    overflow: hidden;
+    background-color: #222222;
+}
+
+li {
+float: left;
+}
+
+.items{
+    padding-left: 16px;
+    padding-top: 8px;
+    padding-bottom:  8px;
+    padding-right: 16px;
+}
+li a {
+    text-decoration: none;
+    display: block;
+    font-family: "Ubuntu", sans-serif;
+    font-weight: 500;
+    font-style: bold;
+    color: aliceblue;
+}
+
+
+li a:hover{
+    background-color: #0e0e0e;
+}
+
+.div_login{
+    position: absolute;
+    display: flex;
+    justify-content: right;
+
+}
