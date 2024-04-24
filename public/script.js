@@ -44,8 +44,6 @@ function mouseMovement(event) {
 
 	// Calculate note position
 	notePosX =  Math.floor(clamp((event.clientX - divRect.left) / noteWidth, 0, trackWidth))
-
-	// TODO: fix Y position not being correct (maybe horizontal grid problem)
 	notePosY = Math.floor(clamp((event.clientY - divRect.top) / noteHeight, 0, trackHeight))
 
 	// Apply note position
@@ -56,6 +54,10 @@ function mouseMovement(event) {
 }
 
 function removeNote(event) {
+	if (!event.target.parentElement.parentElement.parentElement.classList.contains("edit")) {
+		return
+	}
+
 	if (trackMode != "track-mode-remove") {
 		return
 	}
