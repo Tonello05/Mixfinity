@@ -1,20 +1,19 @@
 const synth = new Tone.Synth().toDestination()
-const instument1 = document.getElementById("instument1")
-const instument2 = document.getElementById("instument2")
 
 const trackModeSelect = document.getElementById("track-mode-select")
 const trackModeAdd = document.getElementById("track-mode-add")
 const trackModeResize = document.getElementById("track-mode-resize")
 const trackModeRemove = document.getElementById("track-mode-remove")
 
-const trackContainer = document.getElementById("track-container")
+const trackEditorContainer = document.getElementById("track-editor-container")
 
 synth.volume.value = -13
-trackContainer.innerText = ""
 
 // Track variables
 let tempo = 60
-let noteHeight = 12
+let songDuration = 3000 // 1590
+let noteNumber = 84
+let noteHeight = 17
 let noteWidth = 30
 let trackMode = "track-mode-add"
 
@@ -33,7 +32,7 @@ function mouseMovement(event) {
 	let track = event.target
 
 	// Check if track is is edit mode
-	if (!track.parentElement.classList.contains("edit")) {
+	if (!track.parentElement.parentElement.classList.contains("edit")) {
 		return
 	}
 
@@ -41,8 +40,12 @@ function mouseMovement(event) {
 	let trackHeight= track.clientHeight
 	let divRect = track.getBoundingClientRect()
 
+	console.log(event.clientY - divRect.top);
+
 	// Calculate note position
 	notePosX =  Math.floor(clamp((event.clientX - divRect.left) / noteWidth, 0, trackWidth))
+
+	// TODO: fix Y position not being correct (maybe horizontal grid problem)
 	notePosY = Math.floor(clamp((event.clientY - divRect.top) / noteHeight, 0, trackHeight))
 
 	// Apply note position
@@ -67,7 +70,7 @@ function mouseDown(event) {
 	let track = event.target
 
 	// Check if track is is edit mode
-	if (!track.parentElement.classList.contains("edit")) {
+	if (!track.parentElement.parentElement.classList.contains("edit")) {
 		return
 	}
 	if (trackMode != "track-mode-add") {
@@ -91,6 +94,8 @@ function mouseUp(event) {
 		return
 	}
 
+	let track = note.parentElement
+	note.style.top = ((notePosY * noteHeight) / track.clientHeight) * 100 + "%"
 	note = null;
 }
 
@@ -113,21 +118,27 @@ function toggleEditMode(event) {
 	// Set track to edit mode
 	if (toEdit) {
 		trackEditor.classList.add("edit")
+		trackEditor.querySelector(".track").style.height = (noteNumber * noteHeight) + "px"
+		trackEditor.querySelector(".line-container").style.height = (noteNumber * noteHeight) + "px"
 	} else {
 		trackEditor.classList.remove("edit")
+		trackEditor.querySelector(".track").style.height = 100 + "%"
+		trackEditor.querySelector(".line-container").style.height = 100 + "%"
 	}
 
 	trackEditor.querySelector(".track-editor-top").querySelector(".close-track").hidden = toEdit
 
+	console.log(tracks);
+
 	// Hide other tracks
 	tracks.forEach(element => {
-		if (trackEditor != element.parentElement) {
-			element.parentElement.classList.remove("edit")
+		if (trackEditor != element.parentElement.parentElement) {
+			element.parentElement.parentElement.classList.remove("edit")
 
 			if (toEdit) {
-				element.parentElement.hidden = true
+				element.parentElement.parentElement.hidden = true
 			} else {
-				element.parentElement.hidden = false
+				element.parentElement.parentElement.hidden = false
 			}
 		}
 	});
@@ -135,7 +146,7 @@ function toggleEditMode(event) {
 
 function removeTrack(event) {
 	let trackEditor = event.target.parentElement.parentElement
-	trackContainer.removeChild(trackEditor)
+	trackEditorContainer.removeChild(trackEditor)
 }
 
 function createTrack(event) {
@@ -149,13 +160,17 @@ function createTrack(event) {
 	// Create track
 	let trackEditor = document.createElement("div")
 	let trackEditorTop = document.createElement("div")
+	let trackContainer = document.createElement("div")
 	let h3 = document.createElement("h3")
 	let editTrack = document.createElement("span")
 	let closeTrack = document.createElement("span")
 	let track = document.createElement("div")
+	let lineContainer = document.createElement("div")
+	let hSeperator = document.createElement("div")
 
 	trackEditor.classList.add("track-editor")
 	trackEditorTop.classList.add("track-editor-top")
+	trackContainer.classList.add("track-container")
 	h3.classList.add("interactable")
 	h3.innerText = instrumentName
 	editTrack.classList.add("material-symbols-rounded", "interactable", "edit-track")
@@ -163,11 +178,15 @@ function createTrack(event) {
 	closeTrack.classList.add("material-symbols-rounded", "interactable", "close-track")
 	closeTrack.innerText = "close"
 	track.classList.add("track")
+	lineContainer.classList.add("line-container")
+	hSeperator.classList.add("hseparator")
 
 	let r = Math.round((Math.random() * (255 - 150)) + 150)
 	let g = Math.round((Math.random() * (255 - 150)) + 150)
 	let b = Math.round((Math.random() * (255 - 150)) + 150)
 	track.setAttribute("note-color", r + "," + g + "," + b)
+	track.style.width = songDuration + "px"
+	lineContainer.style.width = songDuration + "px"
 
 	editTrack.addEventListener("click", toggleEditMode)
 	closeTrack.addEventListener("click", removeTrack)
@@ -179,11 +198,25 @@ function createTrack(event) {
 	trackEditorTop.appendChild(editTrack)
 	trackEditorTop.appendChild(closeTrack)
 
-	trackEditor.appendChild(trackEditorTop)
-	trackEditor.appendChild(track)
+	trackContainer.appendChild(lineContainer)
+	trackContainer.appendChild(track)
 
-	// Add track to track-container
-	trackContainer.appendChild(trackEditor)
+	trackEditor.appendChild(trackEditorTop)
+	trackEditor.appendChild(trackContainer)
+
+	// Vertical lines
+	for (let i = 0; i < songDuration / noteWidth; i++) {
+		let vSeparator = document.createElement("div")
+		vSeparator.classList.add("vseparator")
+		vSeparator.style.left = ((i + 1) * noteWidth) + "px"
+		
+		lineContainer.appendChild(vSeparator)
+	}
+
+	lineContainer.appendChild(hSeperator)
+
+	// Add track to track-editor-container
+	trackEditorContainer.appendChild(trackEditor)
 	tracks = document.querySelectorAll('.track');
 }
 
@@ -195,5 +228,3 @@ trackModeSelect.addEventListener("click", changeTrackMode)
 trackModeAdd.addEventListener("click", changeTrackMode)
 trackModeResize.addEventListener("click", changeTrackMode)
 trackModeRemove.addEventListener("click", changeTrackMode)
-
-// console.log("Track dimensions: " + trackWidth + " | " + trackHeight);
