@@ -21,6 +21,12 @@
 	background: #888;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
 .interactable {
 	user-select: none;
 	cursor: pointer;
@@ -75,7 +81,7 @@ aside .instrument-bar {
 	background-color: rgb(20, 20, 20);
 	padding: 5px 0 5px 0;
 	border-radius: 15px;
-	height: 97.5%;
+	height: 95%;
 	position: relative;
 	top: 20px;
 	overflow-y: auto;
@@ -150,6 +156,52 @@ aside .instrument-bar div {
 	border-radius: 15px;
 }
 
+.timeline-container {
+	display: grid;
+	position: relative;
+	top: 10px;
+	background-color: rgb(20, 20, 20);
+	width: 100%;
+	height: 40px;
+	border-radius: 15px;
+	grid-template-columns: 40px auto 15px;
+}
+
+.tempo-container {
+	/* background-color: red; */
+	width: 100%;
+	height: 100%;
+}
+
+#tempo {
+	padding-left: 10px;
+	background-color: rgba(0, 0, 0, 0);
+	width: 100%;
+	height: 100%;
+}
+
+#timeline {
+	position: relative;
+	/* background-color: rgb(25, 25, 25); */
+	width: 100%;
+	height: 100%;
+	overflow-x: scroll;
+}
+
+#timeline::-webkit-scrollbar {
+	height: 2px;
+}
+
+.timeline-separator {
+	position: absolute;
+	height: 100%;
+	width: 1px;
+	background-color: rgb(40, 40, 40);
+	left: 20px;
+	/* opacity: 0; */
+	pointer-events: none;
+}
+
 #track-editor-container {
 	position: relative;
 	top: 20px;
@@ -174,7 +226,7 @@ aside .instrument-bar div {
 }
 
 .edit {
-	height: 790px;
+	height: 785px;
 }
 
 .track-editor-top {
@@ -194,33 +246,52 @@ aside .instrument-bar div {
 	position: relative;
 	width: 100%;
 	height: 100%;
-	overflow-x: scroll;
+	overflow: hidden;
+}
+
+.edit .track-container {
 	overflow-y: scroll;
 }
 
 .track {
-	position: relative;
+	position: absolute;
+	top: 0;
 	height: 100%;
 	width: 100%;
+	left: 40px;
 }
 
 .note {
+	display: flex;
+	justify-content: space-between;
 	position: absolute;
 	background-color: rgb(143, 3, 143);
 	height: 2px;
-	/* height: 2.1935%; */
 	width: 60px;
 	border-radius: 5px;
+	/* pointer-events: none; */
 }
 
 .edit .note {
 	height: 17px;
+	border: 1px solid black;
+}
+
+.note-left {
+	height: 100%;
+	width: 15px;
+}
+
+.note-right {
+	height: 100%;
+	width: 15px;
 }
 
 .line-container {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	left: 40px;
 	pointer-events: none;
 }
 
@@ -234,6 +305,10 @@ aside .instrument-bar div {
 	pointer-events: none;
 }
 
+.edit .vseparator {
+	opacity: 1;
+}
+
 .hseparator {
 	background: url("/img/piano_roll_stripes.png") 0 0 repeat;
 	width: 100%;
@@ -243,9 +318,36 @@ aside .instrument-bar div {
 }
 
 .edit .hseparator {
-	opacity: 0.07;
+	opacity: .07;
 }
 
-.edit .vseparator {
+.keys-container {
+	position: sticky;
+	left: 0;
+	width: 40px;
+	height: 100%;
+	opacity: 0;
+	z-index: 1;
+}
+
+.edit .keys-container {
 	opacity: 1;
+}
+
+.key {
+	background-color: rgb(200, 200, 200);
+	width: 100%;
+	height: 17px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border: 1px solid rgb(60, 60, 60);
+	padding-left: 2px;
+	font-size: 13px;
+	color: rgb(20, 20, 20);
+	user-select: none;
+}
+
+.black-key {
+	background-color: rgb(70, 70, 70);
+	color: rgb(200, 200, 200);
 }
