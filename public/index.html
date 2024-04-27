@@ -53,21 +53,11 @@
 			<div class="song-controls">
 				<div class="bar-left">
 					<!-- Music controls -->
-					<a class="interactable" href="">
-						<span class="material-symbols-rounded">keyboard_double_arrow_left</span>
-					</a>
-					<a class="interactable" href="">
-						<span class="material-symbols-rounded">play_arrow</span>
-					</a>
-					<a class="interactable" href="">
-						<span class="material-symbols-rounded">pause</span>
-					</a>
-					<a class="interactable" href="">
-						<span class="material-symbols-rounded">stop</span>
-					</a>
-					<a class="interactable" href="">
-						<span class="material-symbols-rounded">double_arrow</span>
-					</a>
+						<span id="toStart" class="interactable material-symbols-rounded">keyboard_double_arrow_left</span>
+						<span id="play" class="interactable material-symbols-rounded">play_arrow</span>
+						<span id="pause" class="interactable material-symbols-rounded">pause</span>
+						<span id="stop" class="interactable material-symbols-rounded">stop</span>
+						<span id="toEnd" class="interactable material-symbols-rounded">double_arrow</span>
 					<!-- End music controls -->
 				</div>
 				<div class="bar-center">
@@ -92,7 +82,12 @@
 				<div class="tempo-container">
 					<input type="number" name="" value="120" id="tempo">
 				</div>
-				<div id="timeline"></div>
+				<div id="timeline">
+					<div class="playhead">
+						<span class="arrow material-symbols-rounded">arrow_drop_down</span>
+						<div class="line"></div>
+					</div>
+				</div>
 			</div>
 
 			<div id="track-editor-container">

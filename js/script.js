@@ -6,6 +6,7 @@ const trackModeResize = document.getElementById("track-mode-resize")
 const trackModeRemove = document.getElementById("track-mode-remove")
 
 const timeLine = document.getElementById("timeline")
+const tempoBox = document.getElementById("tempo")
 
 const trackEditorContainer = document.getElementById("track-editor-container")
 
@@ -19,17 +20,20 @@ const NOTE_NAMES = ["B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", 
 let tempo = 60
 let songDuration = 3000 // 1590
 let noteNumber = 84
-let noteHeight = 17
-let noteWidth = 30
+let noteHeightPx = 17
+let noteWidthPx = 30
 let trackMode = "track-mode-add"
+let timelineM1Down = false
+let timelineX = 0
 
 let instruments = document.querySelectorAll('.instrument');
 let tracks = document.querySelectorAll('.track');
+let playheads = document.querySelectorAll(".playhead")
 let notes = document.querySelectorAll(".note")
 
 // Note
 let note
-let noteBaseWidth = 2
+let noteWidth = 2
 let notePosX = 0, notePosY = 0
 let resizePosX = 0
 
@@ -50,9 +54,10 @@ function mouseMovement(event) {
 	let divRect = track.getBoundingClientRect()
 
 	// Calculate note position
-	notePosX =  Math.floor(clamp((event.clientX - divRect.left) / noteWidth, 0, trackWidth))
-	notePosY = Math.floor(clamp((event.clientY - divRect.top) / noteHeight, 0, trackHeight))
+	notePosX =  Math.floor(clamp((event.clientX - divRect.left) / noteWidthPx, 0, trackWidth))
+	notePosY = Math.floor(clamp((event.clientY - divRect.top) / noteHeightPx, 0, trackHeight))
 
+	// console.log(event.clientX - divRect.left);
 	// console.log(notePosX + " " + notePosY);
 
 	// Apply note position
@@ -62,14 +67,13 @@ function mouseMovement(event) {
 
 	// TODO finish note resize
 	if (trackMode == "track-mode-add") {
-		note.style.left = (notePosX * noteWidth) + "px"
-		note.style.top = (notePosY * noteHeight) + "px"
+		note.style.left = (notePosX * noteWidthPx) + "px"
+		note.style.top = (notePosY * noteHeightPx) + "px"
 	} else if (trackMode == "track-mode-resize") {
-		let newNoteWidth = Number.parseInt(note.getAttribute("noteWidth")) + (notePosX - resizePosX)
+		let newNoteWidth = Math.max(Number.parseInt(note.getAttribute("noteWidth")) + (notePosX - resizePosX), 1)
 
-		console.log(newNoteWidth);
-
-		note.style.width = (newNoteWidth * noteWidth) + "px"
+		note.style.width = (newNoteWidth * noteWidthPx) + "px"
+		noteWidth = newNoteWidth
 	}
 }
 
@@ -108,10 +112,15 @@ function mouseUp(event) {
 	if (note == null) {
 		return
 	}
-
+	
 	let track = note.parentElement
-	note.style.top = ((notePosY * noteHeight) / track.clientHeight) * 100 + "%"
+	if (trackMode != "track-mode-resize") {
+		note.style.top = ((notePosY * noteHeightPx) / track.clientHeight) * 100 + "%"
+	}
+
 	note.style.pointerEvents = "all"
+	note.setAttribute("notePos", notePosX + "," + notePosY)
+	note.setAttribute("noteWidth", noteWidth)
 	note = null;
 }
 
@@ -129,11 +138,12 @@ function trackMouseDown(event) {
 	// Create note
 	note = document.createElement("div")
 	note.classList.add("note")
-	note.style.left = (notePosX * noteWidth) + "px"
-	note.style.top = (notePosY * noteHeight) + "px"
+	note.style.left = (notePosX * noteWidthPx) + "px"
+	note.style.top = (notePosY * noteHeightPx) + "px"
 	note.style.backgroundColor = "rgb(" + track.getAttribute("note-color") + ")"
 	note.style.pointerEvents = "none"
-	note.setAttribute("noteWidth", noteBaseWidth)
+	note.style.width = (noteWidth * noteWidthPx) + "px"
+	note.setAttribute("noteWidth", noteWidth)
 	note.addEventListener("click", removeNote)
 
 	// Resize note
@@ -173,14 +183,15 @@ function toggleEditMode(event) {
 	// Set track to edit mode
 	if (toEdit) {
 		trackEditor.classList.add("edit")
-		trackEditor.querySelector(".track").style.height = ((noteNumber + 2) * noteHeight) + "px"
-		trackEditor.querySelector(".line-container").style.height = ((noteNumber + 2) * noteHeight) + "px"
-		trackEditor.querySelector(".keys-container").style.height = ((noteNumber + 2) * noteHeight) + "px"
+		trackEditor.querySelector(".track").style.height = ((noteNumber + 2) * noteHeightPx) + "px"
+		trackEditor.querySelector(".line-container").style.height = ((noteNumber + 2) * noteHeightPx) + "px"
+		trackEditor.querySelector(".keys-container").style.height = ((noteNumber + 2) * noteHeightPx) + "px"
 	} else {
 		trackEditor.classList.remove("edit")
-		trackEditor.querySelector(".track").style.height = 100 + "%"
-		trackEditor.querySelector(".line-container").style.height = 100 + "%"
-		trackEditor.querySelector(".keys-container").style.height = 100 + "%"
+		trackEditor.querySelector(".track-container").scrollTop = 0
+		trackEditor.querySelector(".track").style.height = 170 + "px"
+		trackEditor.querySelector(".line-container").style.height = 170 + "px"
+		trackEditor.querySelector(".keys-container").style.height = 170 + "px"
 	}
 
 	trackEditor.querySelector(".track-editor-top").querySelector(".close-track").hidden = toEdit
@@ -223,6 +234,8 @@ function createTrack(event) {
 	let closeTrack = document.createElement("span")
 	let lineContainer = document.createElement("div")
 	let hSeperator = document.createElement("div")
+	let playHead = document.createElement("div")
+	let line = document.createElement("div")
 	let keysContainer = document.createElement("div")
 	let track = document.createElement("div")
 
@@ -237,6 +250,8 @@ function createTrack(event) {
 	closeTrack.innerText = "close"
 	lineContainer.classList.add("line-container")
 	hSeperator.classList.add("hseparator")
+	playHead.classList.add("playhead")
+	line.classList.add("line")
 	keysContainer.classList.add("keys-container")
 	track.classList.add("track")
 
@@ -246,6 +261,7 @@ function createTrack(event) {
 	track.setAttribute("note-color", r + "," + g + "," + b)
 	track.style.width = songDuration + "px"
 	lineContainer.style.width = songDuration + "px"
+	playHead.style.left = timelineX + "px"
 
 	editTrack.addEventListener("click", toggleEditMode)
 	closeTrack.addEventListener("click", removeTrack)
@@ -257,6 +273,9 @@ function createTrack(event) {
 	trackEditorTop.appendChild(editTrack)
 	trackEditorTop.appendChild(closeTrack)
 
+	playHead.appendChild(line)
+	lineContainer.appendChild(playHead)
+
 	trackContainer.appendChild(lineContainer)
 	trackContainer.appendChild(keysContainer)
 	trackContainer.appendChild(track)
@@ -265,10 +284,10 @@ function createTrack(event) {
 	trackEditor.appendChild(trackContainer)
 
 	// Vertical lines
-	for (let i = 0; i < songDuration / noteWidth; i++) {
+	for (let i = 0; i < songDuration / noteWidthPx; i++) {
 		let vSeparator = document.createElement("div")
 		vSeparator.classList.add("vseparator")
-		vSeparator.style.left = ((i + 1) * noteWidth) + "px"
+		vSeparator.style.left = ((i + 1) * noteWidthPx) + "px"
 		
 		lineContainer.appendChild(vSeparator)
 	}
@@ -304,6 +323,7 @@ function createTrack(event) {
 	// Add track to track-editor-container
 	trackEditorContainer.appendChild(trackEditor)
 	tracks = document.querySelectorAll('.track');
+	playheads = document.querySelectorAll(".playhead")
 }
 
 function timelineScroll() {
@@ -312,22 +332,73 @@ function timelineScroll() {
 	});
 }
 
+function timelineMouseDown() {
+	timelineM1Down = true
+}
+
+function timelineMouseUp() {
+	timelineM1Down = false
+}
+
+function timeLineMouseMove(event) {
+	if (!timelineM1Down) {
+		return
+	}
+
+	let divRect = timeLine.getBoundingClientRect()
+
+	// Calculate mouse position
+	timelineX = Math.max(0, event.clientX - divRect.left + timeLine.scrollLeft)
+
+	playheads.forEach(playhead => {
+		playhead.style.left = timelineX + "px"
+	});
+}
+
+function tempoChanged(event) {
+	let value = tempoBox.value
+	tempoBox.value = clamp(value, MIN_TEMPO, MAX_TEMPO)
+}
+
+function timelineToStart() {
+	timelineX = 0
+	playheads.forEach(playhead => {
+		playhead.style.left = timelineX + "px"
+	});
+}
+
+function timelineToEnd() {
+	timelineX = timeLine.scrollWidth
+	playheads.forEach(playhead => {
+		playhead.style.left = timelineX + "px"
+	});
+}
+
 instruments.forEach(instrument => {
 	instrument.addEventListener("click", createTrack)
 });
 
 // Timeline vertical lines
-for (let i = 0; i < songDuration / noteWidth; i++) {
+// timeLine.style.width = songDuration + "px"
+for (let i = 0; i < songDuration / noteWidthPx; i++) {
 	let vSeparator = document.createElement("div")
 	vSeparator.classList.add("timeline-separator")
-	vSeparator.style.left = (i * noteWidth) + "px"
+	vSeparator.style.left = (i * noteWidthPx) + "px"
 	
 	timeLine.appendChild(vSeparator)
 }
 
+tempoBox.addEventListener("change", tempoChanged)
+
 timeLine.addEventListener("scroll", timelineScroll)
+timeLine.addEventListener("mousedown", timelineMouseDown)
+timeLine.addEventListener("mouseup", timelineMouseUp)
+timeLine.addEventListener("mousemove", timeLineMouseMove)
 
 trackModeSelect.addEventListener("click", changeTrackMode)
 trackModeAdd.addEventListener("click", changeTrackMode)
 trackModeResize.addEventListener("click", changeTrackMode)
 trackModeRemove.addEventListener("click", changeTrackMode)
+
+document.getElementById("toStart").addEventListener("click", timelineToStart)
+document.getElementById("toEnd").addEventListener("click", timelineToEnd)
