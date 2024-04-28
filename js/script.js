@@ -43,6 +43,9 @@ function clamp(value, min, max) {
 
 function mouseMovement(event) {
 	let track = event.target
+	if (track.classList.contains("note")) {
+		track = track.parentElement
+	}
 
 	// Check if track is is edit mode
 	if (!track.parentElement.parentElement.classList.contains("edit")) {
@@ -66,7 +69,7 @@ function mouseMovement(event) {
 	}
 
 	// TODO finish note resize
-	if (trackMode == "track-mode-add") {
+	if (trackMode == "track-mode-add" || trackMode == "track-mode-select") {
 		note.style.left = (notePosX * noteWidthPx) + "px"
 		note.style.top = (notePosY * noteHeightPx) + "px"
 	} else if (trackMode == "track-mode-resize") {
@@ -83,36 +86,36 @@ function removeNote(event) {
 	}
 
 	if (trackMode != "track-mode-remove") {
+		console.log(trackMode);
 		return
 	}
 
 	let note = event.target
 	let track = note.parentElement
-
 	track.removeChild(note)
 }
 
-function resizeMouseDown(event) {
-	if (trackMode != "track-mode-resize") {
+function noteMouseDown(event) {
+	if (!event.target.parentElement.parentElement.parentElement.classList.contains("edit")) {
 		return
 	}
 
-	note = event.target.parentElement
-	note.style.pointerEvents = "none"
-
-	resizePosX = notePosX
-	let noteSide = event.target
-
-	// if (noteSide.classList.contains("note-right")) {
-		
-	// }
+	if (trackMode == "track-mode-select") {
+		note = event.target
+	} else if (trackMode == "track-mode-resize") {
+		note = event.target
+		noteWidth = note.getAttribute("notewidth")
+		console.log(noteWidth);
+		resizePosX = notePosX
+		note.style.pointerEvents = "none"
+	}
 }
 
-function mouseUp(event) {
+function mouseUp() {
 	if (note == null) {
 		return
 	}
-	
+
 	let track = note.parentElement
 	if (trackMode != "track-mode-resize") {
 		note.style.top = ((notePosY * noteHeightPx) / track.clientHeight) * 100 + "%"
@@ -145,35 +148,11 @@ function trackMouseDown(event) {
 	note.style.width = (noteWidth * noteWidthPx) + "px"
 	note.setAttribute("noteWidth", noteWidth)
 	note.addEventListener("click", removeNote)
-
-	// Resize note
-	let noteLeft = document.createElement("div")
-	let noteRight = document.createElement("div")
-
-	noteLeft.classList.add("note-left")
-	noteRight.classList.add("note-right")
-
-	noteLeft.addEventListener("mousedown", resizeMouseDown)
-	noteRight.addEventListener("mousedown", resizeMouseDown)
-
-	note.appendChild(noteLeft)
-	note.appendChild(noteRight)
+	note.addEventListener("mousedown", noteMouseDown)
 
 	// Insert note into track
 	track.appendChild(note)
 	notes = document.querySelectorAll(".note")
-}
-
-function changeTrackMode(event) {
-	let button = event.target
-
-	trackModeSelect.classList.remove("selected")
-	trackModeAdd.classList.remove("selected")
-	trackModeResize.classList.remove("selected")
-	trackModeRemove.classList.remove("selected")
-
-	button.classList.add("selected")
-	trackMode = button.id
 }
 
 function toggleEditMode(event) {
@@ -374,6 +353,37 @@ function timelineToEnd() {
 	});
 }
 
+function changeTrackMode(event) {
+	let button = event.target
+	console.log(event);
+
+	trackModeSelect.classList.remove("selected")
+	trackModeAdd.classList.remove("selected")
+	trackModeResize.classList.remove("selected")
+	trackModeRemove.classList.remove("selected")
+
+	button.classList.add("selected")
+	trackMode = button.id
+}
+
+function onKeyPress(event) {
+	switch (event.key) {
+		case "1":
+			// trackMode = "track-mode-select"
+			changeTrackMode({target: trackModeSelect})
+			break;
+		case "2":
+			changeTrackMode({target: trackModeAdd})
+			break;
+		case "3":
+			changeTrackMode({target: trackModeResize})
+			break;
+		case "4":
+			changeTrackMode({target: trackModeRemove})
+			break;
+	}
+}
+
 instruments.forEach(instrument => {
 	instrument.addEventListener("click", createTrack)
 });
@@ -402,3 +412,5 @@ trackModeRemove.addEventListener("click", changeTrackMode)
 
 document.getElementById("toStart").addEventListener("click", timelineToStart)
 document.getElementById("toEnd").addEventListener("click", timelineToEnd)
+
+document.addEventListener("keypress", onKeyPress)

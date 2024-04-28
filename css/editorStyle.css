@@ -168,7 +168,6 @@ aside .instrument-bar div {
 }
 
 .tempo-container {
-	/* background-color: red; */
 	width: 100%;
 	height: 100%;
 }
@@ -182,7 +181,6 @@ aside .instrument-bar div {
 
 #timeline {
 	position: relative;
-	/* background-color: rgb(25, 25, 25); */
 	width: 100%;
 	height: 100%;
 	overflow-x: scroll;
@@ -287,29 +285,16 @@ aside .instrument-bar div {
 }
 
 .note {
-	display: flex;
-	justify-content: space-between;
 	position: absolute;
 	background-color: rgb(143, 3, 143);
 	height: 2px;
 	width: 60px;
 	border-radius: 5px;
-	/* pointer-events: none; */
 }
 
 .edit .note {
 	height: 17px;
 	border: 1px solid black;
-}
-
-.note-left {
-	height: 100%;
-	width: 15px;
-}
-
-.note-right {
-	height: 100%;
-	width: 15px;
 }
 
 .line-container {
