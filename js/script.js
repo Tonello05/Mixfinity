@@ -1,3 +1,4 @@
+import { SampleLibrary } from "../prova_tone_js/tonejs-instruments-master/tonejs-instruments-master/Tonejs-Instruments.js";
 const synth = new Tone.Synth().toDestination()
 
 const trackModeSelect = document.getElementById("track-mode-select")
@@ -36,6 +37,10 @@ let note
 let noteWidth = 2
 let notePosX = 0, notePosY = 0
 let resizePosX = 0
+
+//Instruments array
+let samplers = {"a":"b"}		//key-value array of all instruments and their name
+let tracknumber = 0	//current number of tracks
 
 function clamp(value, min, max) {
 	return Math.max(Math.min(value, max), min)
@@ -78,6 +83,33 @@ function mouseMovement(event) {
 		note.style.width = (newNoteWidth * noteWidthPx) + "px"
 		noteWidth = newNoteWidth
 	}
+
+		//get note duration
+		let duration = noteWidth/4
+
+		//get the note
+		let currentNote
+		if(notePosY<=11){
+			currentNote = NOTE_NAMES[notePosY]+"7"
+		}else if(notePosY>11 && notePosY<=23){
+			currentNote = NOTE_NAMES[notePosY-12]+"6"
+		}else if(notePosY>23 && notePosY<=35){
+			currentNote = NOTE_NAMES[notePosY-24]+"5"
+		}else if(notePosY>35 && notePosY<=47){
+			currentNote = NOTE_NAMES[notePosY-36]+"4"
+		}else if(notePosY>47 && notePosY<=59){
+			currentNote = NOTE_NAMES[notePosY-48]+"3"
+		}else if(notePosY>59 && notePosY<=71){
+			currentNote = NOTE_NAMES[notePosY-60]+"2"
+		}else{
+			currentNote = NOTE_NAMES[notePosY-72]+"1"
+		}
+
+		//play the notes
+		let instrument = track.parentElement.parentElement.childNodes[0].childNodes[0].innerText
+		samplers[instrument].triggerAttackRelease(currentNote, duration)
+		console.log(samplers[instrument].volume.value)
+
 }
 
 function removeNote(event) {
@@ -150,6 +182,32 @@ function trackMouseDown(event) {
 	note.addEventListener("click", removeNote)
 	note.addEventListener("mousedown", noteMouseDown)
 
+	//get note duration
+	let duration = noteWidth/4
+
+	//get the note
+	let currentNote
+	if(notePosY<=11){
+		currentNote = NOTE_NAMES[notePosY]+"7"
+	}else if(notePosY>11 && notePosY<=23){
+		currentNote = NOTE_NAMES[notePosY-12]+"6"
+	}else if(notePosY>23 && notePosY<=35){
+		currentNote = NOTE_NAMES[notePosY-24]+"5"
+	}else if(notePosY>35 && notePosY<=47){
+		currentNote = NOTE_NAMES[notePosY-36]+"4"
+	}else if(notePosY>47 && notePosY<=59){
+		currentNote = NOTE_NAMES[notePosY-48]+"3"
+	}else if(notePosY>59 && notePosY<71){
+		currentNote = NOTE_NAMES[notePosY-60]+"2"
+	}else{
+		currentNote = NOTE_NAMES[notePosY-72]+"1"
+	}
+
+	//play the notes
+	let instrument = track.parentElement.parentElement.childNodes[0].childNodes[0].innerText
+	samplers[instrument].triggerAttackRelease(currentNote, duration)
+
+
 	// Insert note into track
 	track.appendChild(note)
 	notes = document.querySelectorAll(".note")
@@ -203,6 +261,12 @@ function createTrack(event) {
 	} else {
 		instrumentName = event.target.id
 	}
+
+	//add the sampler for the instrument of the track
+	tracknumber ++;
+	samplers[instrumentName]=loadSampler(instrumentName)
+	samplers[instrumentName].toDestination()
+	samplers[instrumentName].volume.value = -30
 
 	// Create track
 	let trackEditor = document.createElement("div")
@@ -383,6 +447,14 @@ function onKeyPress(event) {
 			break;
 	}
 }
+
+function loadSampler(instrumentName){	//function to load the sampler for a instrument
+	let sampler = SampleLibrary.load({
+		instruments:instrumentName
+	})
+	return sampler
+}
+
 
 instruments.forEach(instrument => {
 	instrument.addEventListener("click", createTrack)
