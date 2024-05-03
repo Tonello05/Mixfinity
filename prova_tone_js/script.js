@@ -1,4 +1,6 @@
 import { SampleLibrary } from "./tonejs-instruments-master/tonejs-instruments-master/Tonejs-Instruments.js";
+import { SongLoader } from "../js/songLoader.js";
+
 const music_buttons = document.getElementById("music_buttons")
 const table_sound = document.getElementById("table_sound")
 const start_song = document.getElementById("start_song")
@@ -92,36 +94,33 @@ start_song.addEventListener("click", () =>{
 })
 
 play_from_file.addEventListener("click", () =>{
-    
-    let txt_json = '{ "tracks": ' +
-         '[' +
-            '{' +
-                '"instrument": "piano",' +
-                '"notes": [' +
-                    '"A1;4n;0",' +
-                    '"A2;4n;1",' +
-                    '"A3;4n;2"'  +
-                ']' +
-            '},' +
-            '{' +
-                '"instrument": "flute",' +
-                '"notes": [' +
-                    '"A4;1n;3",' +
-                    '"A2;1n;4",' +
-                    '"A3;1n;5"' +
-                ']' +
-    
-            '}' +
-        ']' +
-    '}'
+    const json_obj = {
+        "tracks": {
+            "1": {
+                "instrument": "piano",
+                "notes": {
+                    "1;1": "A2,4n,0",
+                    "2;2": "A3,4n,.25",
+                    "3;3": "A4,4n,.5"
+                }
+            }
+        },
+        "tempo": 160,
+        "duration": 3000
+    }
 
-    const json_obj = JSON.parse(txt_json)
+    SongLoader.loadInstruments(json_obj)
+    SongLoader.loadNotes(json_obj)
 
-    loadInstruments(json_obj)
-    loadNotes(json_obj)
     setTimeout(() => {
-        playSong(json_obj)
-    }, 1000);
+        SongLoader.playSong(json_obj)
+    }, 1000)
+
+    // loadInstruments(json_obj)
+    // loadNotes(json_obj)
+    // setTimeout(() => {
+    //     playSong(json_obj)
+    // }, 1000);
 
 
 })
@@ -151,7 +150,7 @@ function loadNotes(obj){
         let arrayNotes = []
         for (let index1 = 0; index1 < obj.tracks[index].notes.length; index1++) {
             let element = obj.tracks[index].notes[index1]
-            let tmpArr = element.split(";")
+            let tmpArr = element.split(",")
             arrayNotes[index1] = {note : tmpArr[0], duration : tmpArr[1], time: tmpArr[2]}
             
         }

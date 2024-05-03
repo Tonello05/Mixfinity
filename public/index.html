@@ -13,15 +13,15 @@
 <body>
 	<header>
 		<div class="toolbar">
-			<a class="interactable" href="">File</a>
-			<a class="interactable" href="">Edit</a>
+			<button class="interactable">File</button>
+			<button class="interactable">Edit</button>
 			<!-- <a class="interactable" href="">Another one</a> -->
 			<!-- <a class="interactable" href="">idk bruh</a> -->
 		</div>
 		<div class="final-toolbar">
-			<a class="interactable" href="">Credits</a>
-			<a class="interactable" href="">Publish</a>
-			<a class="interactable" href="">User</a>
+			<button class="interactable" href="">Credits</button>
+			<button class="interactable" href="">Publish</button>
+			<button class="interactable" href="">User</button>
 		</div>
 	</header>
 
@@ -29,9 +29,9 @@
 		<!-- Instrument list -->
 		<aside>
 			<div class="instrument-bar">
-				<div class="interactable instrument" id="flute">
+				<div class="interactable instrument" id="piano">
 					<span class="material-symbols-rounded">music_note</span>
-					<h3>flute</h3>
+					<h3>piano</h3>
 				</div>
 				<div class="interactable instrument" id="tuba">
 					<span class="material-symbols-rounded">music_note</span>
@@ -53,19 +53,37 @@
 			<div class="song-controls">
 				<div class="bar-left">
 					<!-- Music controls -->
-						<span id="toStart" class="interactable material-symbols-rounded">keyboard_double_arrow_left</span>
-						<span id="play" class="interactable material-symbols-rounded">play_arrow</span>
-						<span id="pause" class="interactable material-symbols-rounded">pause</span>
-						<span id="stop" class="interactable material-symbols-rounded">stop</span>
-						<span id="toEnd" class="interactable material-symbols-rounded">double_arrow</span>
+					<button id="toStart" class="interactable">
+						<span class="material-symbols-rounded">keyboard_double_arrow_left</span>
+					</button>
+					<button id="play" class="interactable">
+						<span class="material-symbols-rounded">play_arrow</span>
+					</button>
+					<button id="pause" class="interactable">
+						<span class="material-symbols-rounded">pause</span>
+					</button>
+					<button id="stop" class="interactable">
+						<span class="material-symbols-rounded">stop</span>
+					</button>
+					<button id="toEnd" class="interactable">
+						<span class="material-symbols-rounded">double_arrow</span>
+					</button>
 					<!-- End music controls -->
 				</div>
 				<div class="bar-center">
 					<!-- Track editor controls -->
-					<span id="track-mode-select" class="material-symbols-rounded interactable">arrow_selector_tool</span>
-					<span id="track-mode-add" class="material-symbols-rounded interactable selected">music_note</span>
-					<span id="track-mode-resize" class="material-symbols-rounded interactable">width</span>
-					<span id="track-mode-remove" class="material-symbols-rounded interactable">delete</span>
+					<button id="track-mode-select" class="interactable">
+						<span class="material-symbols-rounded">arrow_selector_tool</span>
+					</button>
+					<button id="track-mode-add" class="selected interactable">
+						<span class="material-symbols-rounded">music_note</span>
+					</button>
+					<button id="track-mode-resize" class="interactable">
+						<span class="material-symbols-rounded">width</span>
+					</button>
+					<button id="track-mode-remove" class="interactable">
+						<span class="material-symbols-rounded">delete</span>
+					</button>
 					<!-- End track editor controls -->
 				</div>
 				<div class="bar-right">
@@ -94,8 +112,12 @@
 				<!-- <div class="track-editor">
 					<div class="track-editor-top">
 						<h3 class="interactable">Instrument 1</h3>
-						<span class="material-symbols-rounded interactable edit-track">edit</span>
-						<span class="material-symbols-rounded interactable close-track">close</span>
+						<button class="edit-track">
+							<span class="material-symbols-rounded interactable">edit</span>
+						</button>
+						<button class="close-track">
+							<span class="material-symbols-rounded interactable">close</span>
+						</button>
 					</div>
 					<div class="track-container">
 						<div class="line-container">
