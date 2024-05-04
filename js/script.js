@@ -19,13 +19,14 @@ const MAX_TEMPO = 300
 const NOTE_NAMES = ["B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"]
 
 let volume = -19
-let tempo = 300
+let tempo = 120
 let songDuration = 3000 // 1590
 let noteNumber = 84
 let noteHeightPx = 17
-let noteWidthPx = 30
+let noteWidthPx = 20
 let trackMode = "track-mode-add"
 let timelineM1Down = false
+let tempoBoxSelected = false
 let timelineX = 0
 
 let instruments = document.querySelectorAll('.instrument');
@@ -35,7 +36,7 @@ let notes = document.querySelectorAll(".note")
 
 // Note
 let note
-let noteWidth = 2
+let noteWidth = 1
 let notePosX = 0, notePosY = 0
 let resizePosX = 0
 
@@ -43,7 +44,7 @@ let resizePosX = 0
 let selectedInstrument
 let samplers = {"a":"b"}	// key-value array of all instruments and their name
 let trackIdCounter = 0		// Incremental value for track IDs
-let song = {"tracks": {}, "tempo": tempo, "duration": 3000}
+let song = {"tracks": {}, "tempo": tempo, "duration": songDuration}
 
 function clamp(value, min, max) {
 	return Math.max(Math.min(value, max), min)
@@ -110,11 +111,10 @@ function mouseMovement(event) {
 			return
 		}
 
-		let duration = noteWidth / 4
 		let noteSound = getNoteSound(notePosY)
 
 		// Play the notes
-		samplers[selectedInstrument].triggerAttackRelease(noteSound, duration)
+		samplers[selectedInstrument].triggerAttackRelease(noteSound, noteWidth + "n")
 
 	} else if (trackMode == "track-mode-resize") {
 		let newNoteWidth = Math.max(Number.parseInt(note.getAttribute("noteWidth")) + (notePosX - resizePosX), 1)
@@ -131,8 +131,7 @@ function noteClick(event) {
 
 	if (trackMode == "track-mode-select") {
 		let noteSound = getNoteSound(notePosY)
-		let duration = noteWidth / 4
-		samplers[selectedInstrument].triggerAttackRelease(noteSound, duration)
+		samplers[selectedInstrument].triggerAttackRelease(noteSound, noteWidth + "n")
 	} else if (trackMode == "track-mode-remove") {
 		let note = event.target
 		let track = note.parentElement
@@ -177,7 +176,7 @@ function mouseUp() {
 
 	// Add note to song data
 	// TODO: when note is moved, remove old note data from song
-	song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY] = getNoteSound(notePosY) + ",4n," + (notePosX / 4)
+	song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY] = getNoteSound(notePosY) + "," + noteWidth + "n," + notePosX * (1 / (tempo / 60))
 
 	note = null;
 }
@@ -205,11 +204,10 @@ function trackMouseDown(event) {
 	note.addEventListener("click", noteClick)
 	note.addEventListener("mousedown", noteMouseDown)
 
-	let duration = noteWidth / 4
 	let noteSound = getNoteSound(notePosY)
 
 	// Play the notes
-	samplers[selectedInstrument].triggerAttackRelease(noteSound, duration)
+	samplers[selectedInstrument].triggerAttackRelease(noteSound, noteWidth + "n")
 
 	// Insert note into track
 	track.appendChild(note)
@@ -276,7 +274,7 @@ function createTrack(event) {
 	samplers[instrumentName] = loadSampler(instrumentName)
 	samplers[instrumentName].toDestination()
 	samplers[instrumentName].volume.value = volume
-	
+
 	// Add track object to song data
 	trackIdCounter++;
 	song.tracks[trackIdCounter] = {"instrument": instrumentName, "notes": {}}
@@ -300,7 +298,6 @@ function createTrack(event) {
 	trackEditor.classList.add("track-editor")
 	trackEditorTop.classList.add("track-editor-top")
 	trackContainer.classList.add("track-container")
-	h3.classList.add("interactable")
 	h3.innerText = instrumentName
 	editTrack.classList.add("edit-track", "interactable")
 	editTrackSpan.classList.add("material-symbols-rounded")
@@ -322,7 +319,7 @@ function createTrack(event) {
 	track.setAttribute("note-color", r + "," + g + "," + b)
 	track.style.width = songDuration + "px"
 	lineContainer.style.width = songDuration + "px"
-	playHead.style.left = timelineX + "px"
+	playHead.style.transform = "translateX(" + timelineX + "px"
 
 	editTrack.addEventListener("click", toggleEditMode)
 	closeTrack.addEventListener("click", removeTrack)
@@ -370,7 +367,7 @@ function createTrack(event) {
 		let noteName = NOTE_NAMES[noteIndex - 1]
 
 		keyDiv.addEventListener("click", (event) => {
-			samplers[instrumentName].triggerAttackRelease(noteName + event.target.getAttribute("pitch"), 1)
+			samplers[instrumentName].triggerAttackRelease(noteName + event.target.getAttribute("pitch"), "4n")
 		})
 
 		if (noteName == "C") {
@@ -403,14 +400,6 @@ function timelineScroll() {
 	});
 }
 
-function timelineMouseDown() {
-	timelineM1Down = true
-}
-
-function timelineMouseUp() {
-	timelineM1Down = false
-}
-
 function timeLineMouseMove(event) {
 	if (!timelineM1Down) {
 		return
@@ -422,26 +411,29 @@ function timeLineMouseMove(event) {
 	timelineX = Math.max(0, event.clientX - divRect.left + timeLine.scrollLeft)
 
 	playheads.forEach(playhead => {
-		playhead.style.left = timelineX + "px"
+		playhead.style.transition = null
+		playhead.style.transform = "translateX(" + timelineX + "px"
 	});
 }
 
 function tempoChanged() {
-	let value = tempoBox.value
-	tempoBox.value = clamp(value, MIN_TEMPO, MAX_TEMPO)
+	let value = clamp(tempoBox.value, MIN_TEMPO, MAX_TEMPO)
+	tempo = value
+	tempoBox.value = tempo
+	Tone.Transport.bpm.value = tempo
 }
 
 function timelineToStart() {
 	timelineX = 0
 	playheads.forEach(playhead => {
-		playhead.style.left = timelineX + "px"
+		playhead.style.transform = "translateX(" + timelineX + "px"
 	});
 }
 
 function timelineToEnd() {
 	timelineX = timeLine.scrollWidth
 	playheads.forEach(playhead => {
-		playhead.style.left = timelineX + "px"
+		playhead.style.transform = "translateX(" + timelineX + "px"
 	});
 }
 
@@ -457,7 +449,12 @@ function changeTrackMode(event) {
 	trackMode = button.id
 }
 
+// Track mode keybinds
 function onKeyPress(event) {
+	if (tempoBoxSelected) {
+		return
+	}
+
 	switch (event.key) {
 		case "1":
 			changeTrackMode({target: trackModeSelect})
@@ -480,6 +477,12 @@ function playSong() {
 
 	setTimeout(() => {
 		SongLoader.playSong(song)
+
+		let seconds = ((1 / (tempo / 60)) * 4)
+		playheads.forEach(playhead => {
+			playhead.style.transform = "translateX(" + (noteWidthPx * 4) + "px"
+			playhead.style.transition = "transform " + seconds + "s linear 0s"
+		});
 	}, 1000);
 }
 
@@ -488,24 +491,40 @@ function loadSampler(instrumentName) {
 	return SampleLibrary.load({instruments:instrumentName})
 }
 
+Tone.Transport.bpm.value = tempo
+
 instruments.forEach(instrument => {
 	instrument.addEventListener("click", createTrack)
 });
 
 // Timeline vertical lines
+let noteCounter = 1
 for (let i = 0; i < songDuration / noteWidthPx; i++) {
 	let vSeparator = document.createElement("div")
 	vSeparator.classList.add("timeline-separator")
+
+	if ((i + 1) % 4 == 1) {
+		vSeparator.classList.add("timeline-separator-note")
+
+		let numberDiv = document.createElement("div")
+		numberDiv.innerText = noteCounter
+		noteCounter++
+
+		vSeparator.appendChild(numberDiv)
+	}
+
 	vSeparator.style.left = (i * noteWidthPx) + "px"
-	
+
 	timeLine.appendChild(vSeparator)
 }
 
 tempoBox.addEventListener("change", tempoChanged)
+tempoBox.addEventListener("focusin", () => {tempoBoxSelected = true})
+tempoBox.addEventListener("focusout", () => {tempoBoxSelected = false})
 
 timeLine.addEventListener("scroll", timelineScroll)
-timeLine.addEventListener("mousedown", timelineMouseDown)
-timeLine.addEventListener("mouseup", timelineMouseUp)
+timeLine.addEventListener("mousedown", () => {timelineM1Down = true})
+timeLine.addEventListener("mouseup", (event) => {timeLineMouseMove(event); timelineM1Down = false})
 timeLine.addEventListener("mousemove", timeLineMouseMove)
 
 trackModeSelect.addEventListener("click", changeTrackMode)

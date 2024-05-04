@@ -32,6 +32,10 @@ input::-webkit-inner-spin-button {
 	cursor: pointer;
 }
 
+.transition {
+	transition: transform 100ms linear 0s;
+}
+
 button {
 	background-color: rgba(0, 0, 0, 0);
 }
@@ -235,8 +239,18 @@ aside .instrument-bar div {
 	width: 1px;
 	background-color: rgb(40, 40, 40);
 	left: 20px;
-	/* opacity: 0; */
 	pointer-events: none;
+}
+
+.timeline-separator-note {
+	background-color: rgb(60, 60, 60);
+	font-size: 10px;
+	user-select: none;
+}
+
+.timeline-separator-note div{
+	padding-left: 2px;
+	color: rgb(150, 150, 150);
 }
 
 #track-editor-container {
@@ -272,6 +286,10 @@ aside .instrument-bar div {
 	height: 30px;
 	margin-bottom: 5px;
 	padding-bottom: 5px;
+}
+
+.track-editor-top h3 {
+	user-select: none;
 }
 
 .track-editor-top span {
