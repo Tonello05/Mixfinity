@@ -46,6 +46,8 @@ let samplers = {"a":"b"}	// key-value array of all instruments and their name
 let trackIdCounter = 0		// Incremental value for track IDs
 let song = {"tracks": {}, "tempo": tempo, "duration": songDuration}
 
+let playheadsId
+
 function clamp(value, min, max) {
 	return Math.max(Math.min(value, max), min)
 }
@@ -168,20 +170,27 @@ function mouseUp() {
 		return
 	}
 
+	// Get current notePos
+	let noteX = notePosX, noteY = notePosY
+
 	let track = note.parentElement
 	let trackEditor = track.parentElement.parentElement
 	if (trackMode != "track-mode-resize") {
 		note.style.top = ((notePosY * noteHeightPx) / track.clientHeight) * 100 + "%"
+		note.setAttribute("notePos", notePosX + ";" + notePosY)
 	}
 
+	// Use previous notePos if is resizing note
+	let notePos = note.getAttribute("notePos").split(";")
+	noteX = [notePos[0]]
+	noteY = [notePos[1]]
+
 	note.style.pointerEvents = "all"
-	note.setAttribute("notePos", notePosX + ";" + notePosY)
 	note.setAttribute("noteWidth", noteWidth)
 
 	// Add note to song data
 	// TODO: when note is moved, remove old note data from song
-	song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY] = getNoteSound(notePosY) + "," + noteWidth + "n,+" + notePosX * (1 / (tempo / 60))
-
+	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + noteWidth + "n,+" + noteX * (1 / (tempo / 60))
 	note = null;
 }
 
@@ -409,6 +418,10 @@ function timeLineMouseMove(event) {
 		return
 	}
 
+	if (playheadsId) {
+		clearInterval(playheadsId)
+	}
+
 	let divRect = timeLine.getBoundingClientRect()
 
 	// Calculate mouse position
@@ -475,34 +488,40 @@ function onKeyPress(event) {
 	}
 }
 
+function animatePlayheads() {
+	let seconds = ((1 / (tempo / 60)) * 4)
+	let pos = new WebKitCSSMatrix(window.getComputedStyle(playheads[0]).transform).m41
+	let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / noteWidth)))
+
+	timelineX = pos
+	playheads.forEach(playhead => {
+		let newPos = gridPos * noteWidthPx
+		playhead.style.transition = "transform " + seconds + "s linear 0s"
+		playhead.style.transform = "translateX(" + (newPos + (noteWidthPx * 4)) + "px"
+	});
+}
+
 function playSong() {
+	if (playheadsId) {
+		return
+	}
+
 	SongLoader.loadInstruments(song)
 	SongLoader.loadNotes(song)
 
-	playheads.forEach(playhead => {
-		// Get translateX style of playHead
-		let pos = new WebKitCSSMatrix(window.getComputedStyle(playhead).transform).m41
-		// Snap pos to x line
-		let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / noteWidth)))
-
-		console.log(pos + "|" + (gridPos * noteWidthPx));
-		playhead.style.transition = null
-		playhead.style.transform = "translateX(" + (gridPos * noteWidthPx) + "px"
-	});
-
 	setTimeout(() => {
 		SongLoader.playSong(song)
-
-		let seconds = ((1 / (tempo / 60)) * 4)
-		playheads.forEach(playhead => {
-			let pos = new WebKitCSSMatrix(window.getComputedStyle(playhead).transform).m41
-			let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / noteWidth)))
-			let newPos = gridPos * noteWidthPx
-
-			playhead.style.transition = "transform " + seconds + "s linear 0s"
-			playhead.style.transform = "translateX(" + (newPos + (noteWidthPx * 4)) + "px"
-		});
+		playheadsId = setInterval(animatePlayheads, 500)
 	}, 1000);
+}
+
+function pauseSong() {
+	clearInterval(playheadsId)
+
+	playheads.forEach(playhead => {
+		playhead.style.transition = null
+		playhead.style.transform = "translateX(" + timelineX + "px"
+	});
 }
 
 // Load instrument's sampler
@@ -553,6 +572,7 @@ trackModeRemove.addEventListener("click", changeTrackMode)
 
 document.getElementById("toStart").addEventListener("click", timelineToStart)
 document.getElementById("play").addEventListener("click", playSong)
+document.getElementById("pause").addEventListener("click", pauseSong)
 document.getElementById("toEnd").addEventListener("click", timelineToEnd)
 
 document.addEventListener("keypress", onKeyPress)
