@@ -180,7 +180,7 @@ function mouseUp() {
 
 	// Add note to song data
 	// TODO: when note is moved, remove old note data from song
-	song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY] = getNoteSound(notePosY) + "," + noteWidth + "n," + notePosX * (1 / (tempo / 60))
+	song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY] = getNoteSound(notePosY) + "," + noteWidth + "n,+" + notePosX * (1 / (tempo / 60))
 
 	note = null;
 }
@@ -479,13 +479,28 @@ function playSong() {
 	SongLoader.loadInstruments(song)
 	SongLoader.loadNotes(song)
 
+	playheads.forEach(playhead => {
+		// Get translateX style of playHead
+		let pos = new WebKitCSSMatrix(window.getComputedStyle(playhead).transform).m41
+		// Snap pos to x line
+		let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / noteWidth)))
+
+		console.log(pos + "|" + (gridPos * noteWidthPx));
+		playhead.style.transition = null
+		playhead.style.transform = "translateX(" + (gridPos * noteWidthPx) + "px"
+	});
+
 	setTimeout(() => {
 		SongLoader.playSong(song)
 
 		let seconds = ((1 / (tempo / 60)) * 4)
 		playheads.forEach(playhead => {
-			playhead.style.transform = "translateX(" + (noteWidthPx * 4) + "px"
+			let pos = new WebKitCSSMatrix(window.getComputedStyle(playhead).transform).m41
+			let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / noteWidth)))
+			let newPos = gridPos * noteWidthPx
+
 			playhead.style.transition = "transform " + seconds + "s linear 0s"
+			playhead.style.transform = "translateX(" + (newPos + (noteWidthPx * 4)) + "px"
 		});
 	}, 1000);
 }
