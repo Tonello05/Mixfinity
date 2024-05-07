@@ -176,7 +176,7 @@ function mouseUp() {
 
 	// Add note to song data
 	// TODO: when note is moved, remove old note data from song
-	song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY] = getNoteSound(notePosY) + "," + noteWidth + "n," + notePosX * (1 / (tempo / 60))
+	song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY] = getNoteSound(notePosY) + "," + noteWidth + "n,+" + notePosX * (1 / (tempo / 60))
 
 	note = null;
 }

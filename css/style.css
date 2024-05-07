@@ -91,6 +91,10 @@ body {
 	background-color: rgb(30, 30, 30);
 	width: 150px;
 	height: 70%;
+	text-align: center;
+	padding: 1%;
+	user-select: none;
+	cursor: pointer;
 }
 
 /* .logo{

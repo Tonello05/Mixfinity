@@ -352,7 +352,7 @@ aside .instrument-bar div {
 }
 
 .hseparator {
-	background: url("/img/piano_roll_stripes.png") 0 0 repeat;
+	background: url("../img/piano_roll_stripes.png") 0 0 repeat;
 	width: 100%;
 	height: 100%;
 	opacity: 0;
