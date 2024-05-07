@@ -145,17 +145,21 @@ function noteClick(event) {
 }
 
 function noteMouseDown(event) {
-	if (!event.target.parentElement.parentElement.parentElement.classList.contains("edit")) {
+	let trackEditor = event.target.parentElement.parentElement.parentElement
+	if (!trackEditor.classList.contains("edit")) {
 		return
 	}
 
 	if (trackMode == "track-mode-select") {
 		note = event.target
+		delete song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY]
 	} else if (trackMode == "track-mode-resize") {
 		note = event.target
 		noteWidth = note.getAttribute("notewidth")
 		resizePosX = notePosX
 		note.style.pointerEvents = "none"
+
+		delete song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY]
 	}
 }
 
