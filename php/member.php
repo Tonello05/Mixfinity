@@ -54,10 +54,12 @@ if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 			$title = $row ['title'];
 			$duration = $row['duration'];
 			$rating = $row['rating'];
+			$id = $row['id'];
 
-			echo "<div class='music-card' id='music-card'>
+			echo "<div class='music-card' id='".$id."'>
 					<br>
-					".$title." <br> <br><br>
+					<div class='title'>".$title."</div>
+					<br> <br><br>
 					".$duration." px <br><br>
 					".$rating." <br>
 					<a href=".$title.">Scarica</a>
@@ -80,8 +82,6 @@ if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 	</body>
 
 	<script src="../js/member.js"></script>
-
-
 
 	</html>
 <?php
