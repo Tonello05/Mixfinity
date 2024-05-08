@@ -29,8 +29,6 @@ export var SamplerController = {
 		return sampler
 	},
 
-
-	
 	playSong: function (songJson, samplers, playheadPosition) {
 		for (const trackId in songJson.tracks) {
 			let sampler = samplers[trackId]
@@ -41,5 +39,12 @@ export var SamplerController = {
 				sampler.triggerAttackRelease(noteData[0], noteData[1], ("+" + noteData[2]))
 			}
 		}
+	},
+
+	stop: function (samplers) {
+		// for (const samplerId in samplers) {
+		// 	console.log(samplers[samplerId])
+		// 	samplers[samplerId].releaseAll()
+		// }
 	}
 }

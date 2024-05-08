@@ -39,9 +39,9 @@ let note
 let noteWidth = 1
 let notePosX = 0, notePosY = 0
 let resizePosX = 0
+let noteMoved = false
 
 // Instruments
-let selectedInstrument
 let samplers = {"a":"b"}	// key-value array of all instruments and their name
 let trackIdCounter = 0		// Incremental value for track IDs
 let song = {"tracks": {}, "tempo": tempo, "duration": songDuration}
@@ -105,19 +105,33 @@ function mouseMovement(event) {
 		return
 	}
 
+	// Disable mouse movement and keep note at it's position when in remove mode
+	if (trackMode == "track-mode-remove") {
+		let notePos = note.getAttribute("notepos").split(";")
+		notePosX = notePos[0]
+		notePosY = notePos[1]
+		return
+	}
+
+	note.style.pointerEvents = "none"
+
 	if (trackMode == "track-mode-add" || trackMode == "track-mode-select") {
 		note.style.left = (notePosX * noteWidthPx) + "px"
 		note.style.top = (notePosY * noteHeightPx) + "px"
+
+		if (note.getAttribute("notepos").split(";")[0] == notePosX) {
+			noteMoved = false
+		} else {
+			noteMoved = true
+		}
 
 		// Return if note has not changed key
 		if (oldNotePosY == notePosY) {
 			return
 		}
 
-		let noteSound = getNoteSound(notePosY)
-
 		// Play the notes
-		samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(noteSound, noteWidth + "n")
+		samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), noteWidth + "n")
 
 	} else if (trackMode == "track-mode-resize") {
 		let newNoteWidth = Math.max(Number.parseInt(note.getAttribute("noteWidth")) + (notePosX - resizePosX), 1)
@@ -128,20 +142,20 @@ function mouseMovement(event) {
 }
 
 function noteClick(event) {
-	if (!event.target.parentElement.parentElement.parentElement.classList.contains("edit")) {
+	let trackContainer = event.target.parentElement.parentElement.parentElement
+	if (!trackContainer.classList.contains("edit")) {
 		return
 	}
 
 	if (trackMode == "track-mode-select") {
-		let noteSound = getNoteSound(notePosY)
-		samplers[selectedInstrument].triggerAttackRelease(noteSound, noteWidth + "n")
+		samplers[trackContainer.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), noteWidth + "n")
 	} else if (trackMode == "track-mode-remove") {
 		let note = event.target
 		let track = note.parentElement
 		let trackEditor = track.parentElement.parentElement
 
 		// Remove note from song data
-		delete song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY]
+		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
 
 		track.removeChild(note)
 	}
@@ -155,19 +169,24 @@ function noteMouseDown(event) {
 
 	if (trackMode == "track-mode-select") {
 		note = event.target
-		delete song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY]
+		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
 	} else if (trackMode == "track-mode-resize") {
 		note = event.target
 		noteWidth = note.getAttribute("notewidth")
 		resizePosX = notePosX
-		note.style.pointerEvents = "none"
-
-		delete song.tracks[trackEditor.getAttribute("track-id")].notes[notePosX + ";" + notePosY]
+		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
 	}
 }
 
-function mouseUp() {
+function mouseUp(event) {
+	let target = event.target
 	if (note == null) {
+		return
+	}
+
+	note.style.pointerEvents = "all"
+	if (target == note) {
+		note = null;
 		return
 	}
 
@@ -179,19 +198,17 @@ function mouseUp() {
 	if (trackMode != "track-mode-resize") {
 		note.style.top = ((notePosY * noteHeightPx) / track.clientHeight) * 100 + "%"
 		note.setAttribute("notePos", notePosX + ";" + notePosY)
+	} else {
+		// Use previous notePosition if is resizing note
+		let notePos = note.getAttribute("notePos").split(";")
+		noteX = notePos[0]
+		noteY = notePos[1]
 	}
 
-	// Use previous notePos if is resizing note
-	let notePos = note.getAttribute("notePos").split(";")
-	noteX = [notePos[0]]
-	noteY = [notePos[1]]
-
-	note.style.pointerEvents = "all"
 	note.setAttribute("noteWidth", noteWidth)
 
 	// Add note to song data
-	// TODO: when note is moved, remove old note data from song
-	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + noteWidth + "n," + noteX * (1 / (tempo / 60))
+	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + (noteWidth + "n") + "," + noteX * (60 / tempo)
 	note = null;
 }
 
@@ -216,13 +233,12 @@ function trackMouseDown(event) {
 	note.style.pointerEvents = "none"
 	note.style.width = (noteWidth * noteWidthPx) + "px"
 	note.setAttribute("noteWidth", noteWidth)
+	note.setAttribute("notepos", notePosX + ";" + notePosY)
 	note.addEventListener("click", noteClick)
 	note.addEventListener("mousedown", noteMouseDown)
 
-	let noteSound = getNoteSound(notePosY)
-
 	// Play the notes
-	samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(noteSound, noteWidth + "n")
+	samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), noteWidth + "n")
 
 	// Insert note into track
 	track.appendChild(note)
@@ -239,16 +255,12 @@ function toggleEditMode(event) {
 		trackEditor.querySelector(".track").style.height = ((noteNumber + 2) * noteHeightPx) + "px"
 		trackEditor.querySelector(".line-container").style.height = ((noteNumber + 2) * noteHeightPx) + "px"
 		trackEditor.querySelector(".keys-container").style.height = ((noteNumber + 2) * noteHeightPx) + "px"
-
-		selectedInstrument = trackEditor.querySelector("h3").innerText
 	} else {
 		trackEditor.classList.remove("edit")
 		trackEditor.querySelector(".track-container").scrollTop = 0
 		trackEditor.querySelector(".track").style.height = 170 + "px"
 		trackEditor.querySelector(".line-container").style.height = 170 + "px"
 		trackEditor.querySelector(".keys-container").style.height = 170 + "px"
-
-		selectedInstrument = null
 	}
 
 	trackEditor.querySelector(".track-editor-top").querySelector(".close-track").hidden = toEdit
@@ -271,10 +283,12 @@ function toggleEditMode(event) {
 
 function removeTrack(event) {
 	let trackEditor = event.target.parentElement.parentElement
+	let trackId = trackEditor.getAttribute("track-id")
 	trackEditorContainer.removeChild(trackEditor)
 
 	// Remove track from song data
-	delete song.tracks[trackEditor.getAttribute("track-id")]
+	delete song.tracks[trackId]
+	delete samplers[trackId]
 }
 
 function createTrack(event) {
@@ -423,6 +437,7 @@ function timeLineMouseMove(event) {
 	if (playheadsId) {
 		clearInterval(playheadsId)
 		playheadsId = null
+		SamplerController.stop(samplers)
 	}
 
 	let divRect = timeLine.getBoundingClientRect()
@@ -496,7 +511,7 @@ function onKeyPress(event) {
 }
 
 function animatePlayheads() {
-	let seconds = ((1 / (tempo / 60)) * 4)
+	let seconds = ((60 / tempo) * 4)
 	let pos = new WebKitCSSMatrix(window.getComputedStyle(playheads[0]).transform).m41
 	let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / noteWidth)))
 
@@ -513,30 +528,26 @@ function playSong() {
 		return
 	}
 
-	// SamplerController.loadInstruments(song)
-	// SamplerController.loadNotes(song)
-
-	setTimeout(() => {
-		animatePlayheads()
-		SamplerController.playSong(song, samplers, /* Playhead position*/)
-		playheadsId = setInterval(animatePlayheads, 500)
-	}, 1000);
+	animatePlayheads()
+	SamplerController.playSong(song, samplers, /* Playhead position*/)
+	playheadsId = setInterval(animatePlayheads, 100)
 }
 
 function pauseSong() {
 	clearInterval(playheadsId)
 	playheadsId = null
 
+	SamplerController.stop(samplers)
 	playheads.forEach(playhead => {
 		playhead.style.transition = null
 		playhead.style.transform = "translateX(" + timelineX + "px"
 	});
 }
 
-// Load instrument's sampler
-// function loadSampler(instrumentName) {
-// 	return SampleLibrary.load({instruments:instrumentName})
-// }
+function stopSong() {
+	pauseSong()
+	timelineToStart()
+}
 
 Tone.Transport.bpm.value = tempo
 
@@ -582,6 +593,7 @@ trackModeRemove.addEventListener("click", changeTrackMode)
 document.getElementById("toStart").addEventListener("click", timelineToStart)
 document.getElementById("play").addEventListener("click", playSong)
 document.getElementById("pause").addEventListener("click", pauseSong)
+document.getElementById("stop").addEventListener("click", stopSong)
 document.getElementById("toEnd").addEventListener("click", timelineToEnd)
 
 document.addEventListener("keypress", onKeyPress)

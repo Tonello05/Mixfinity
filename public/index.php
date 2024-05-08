@@ -1,31 +1,22 @@
 <?php
-
 	require "../php/connect.php";
 
 	if(isset($_GET['id_song'])){
-
-        $json = null;
+		$json = null;
 		$id_song = $_GET['id_song'];
-		
 		$sql = "SELECT notes FROM music WHERE id = '$id_song'";
 
-        try {
-            $response = $conn->query($sql);
+		try {
+			$response = $conn->query($sql);
 
-            if($response->num_rows == 1){
-                $json = $response->fetch_assoc()['notes'];
-            }
-
-        } catch (\Throwable $th) {
-        }
-		
-        
-
+			if($response->num_rows == 1){
+				$json = $response->fetch_assoc()['notes'];
+			}
+		} catch (\Throwable $th) {
+		}
 	}
-
 ?>
-
-
+<!DOCTYPE html>
 <html lang="it">
 <head>
 	<meta charset="UTF-8">
@@ -162,14 +153,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="../js/script.js" type = "module"></script>
-<!-- <script src="js/songLoader.js" type = "module"></script> -->
 <script type="module">
 	import { SongLoader } from "../js/SongLoader.js";
 
-    var data = <?php echo $json;?>;
-    
+	var data = <?php echo $json;?>;
 	SongLoader.loadSong(data)
-
-
 </script>
 </html>
