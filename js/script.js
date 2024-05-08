@@ -1,5 +1,5 @@
 import { SampleLibrary } from "../prova_tone_js/tonejs-instruments-master/tonejs-instruments-master/Tonejs-Instruments.js";
-import { SongLoader } from "./songLoader.js"
+import { SamplerController } from "./samplerController.js"
 
 const synth = new Tone.Synth().toDestination()
 
@@ -76,6 +76,7 @@ function getNoteSound(yPos) {
 
 function mouseMovement(event) {
 	let track = event.target
+	let trackEditor = track.parentElement.parentElement
 	if (track.classList.contains("note")) {
 		track = track.parentElement
 	}
@@ -116,7 +117,7 @@ function mouseMovement(event) {
 		let noteSound = getNoteSound(notePosY)
 
 		// Play the notes
-		samplers[selectedInstrument].triggerAttackRelease(noteSound, noteWidth + "n")
+		samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(noteSound, noteWidth + "n")
 
 	} else if (trackMode == "track-mode-resize") {
 		let newNoteWidth = Math.max(Number.parseInt(note.getAttribute("noteWidth")) + (notePosX - resizePosX), 1)
@@ -190,15 +191,16 @@ function mouseUp() {
 
 	// Add note to song data
 	// TODO: when note is moved, remove old note data from song
-	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + noteWidth + "n,+" + noteX * (1 / (tempo / 60))
+	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + noteWidth + "n," + noteX * (1 / (tempo / 60))
 	note = null;
 }
 
 function trackMouseDown(event) {
 	let track = event.target
+	let trackEditor = track.parentElement.parentElement
 
 	// Check if track is is edit mode
-	if (!track.parentElement.parentElement.classList.contains("edit")) {
+	if (!trackEditor.classList.contains("edit")) {
 		return
 	}
 	if (trackMode != "track-mode-add") {
@@ -220,7 +222,7 @@ function trackMouseDown(event) {
 	let noteSound = getNoteSound(notePosY)
 
 	// Play the notes
-	samplers[selectedInstrument].triggerAttackRelease(noteSound, noteWidth + "n")
+	samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(noteSound, noteWidth + "n")
 
 	// Insert note into track
 	track.appendChild(note)
@@ -283,13 +285,13 @@ function createTrack(event) {
 		instrumentName = event.target.id
 	}
 
+	trackIdCounter++;
+
 	// Add the sampler for the instrument of the track
-	samplers[instrumentName] = loadSampler(instrumentName)
-	samplers[instrumentName].toDestination()
-	samplers[instrumentName].volume.value = volume
+	samplers[trackIdCounter] = SamplerController.loadSampler(instrumentName, /* AvailableSounds */)
+	samplers[trackIdCounter].volume.value = volume
 
 	// Add track object to song data
-	trackIdCounter++;
 	song.tracks[trackIdCounter] = {"instrument": instrumentName, "notes": {}}
 
 	// Create track
@@ -380,7 +382,7 @@ function createTrack(event) {
 		let noteName = NOTE_NAMES[noteIndex - 1]
 
 		keyDiv.addEventListener("click", (event) => {
-			samplers[instrumentName].triggerAttackRelease(noteName + event.target.getAttribute("pitch"), "4n")
+			samplers[trackIdCounter].triggerAttackRelease(noteName + event.target.getAttribute("pitch"), "4n")
 		})
 
 		if (noteName == "C") {
@@ -420,6 +422,7 @@ function timeLineMouseMove(event) {
 
 	if (playheadsId) {
 		clearInterval(playheadsId)
+		playheadsId = null
 	}
 
 	let divRect = timeLine.getBoundingClientRect()
@@ -441,6 +444,8 @@ function tempoChanged() {
 }
 
 function timelineToStart() {
+	pauseSong()
+
 	timelineX = 0
 	playheads.forEach(playhead => {
 		playhead.style.transform = "translateX(" + timelineX + "px"
@@ -448,6 +453,8 @@ function timelineToStart() {
 }
 
 function timelineToEnd() {
+	pauseSong()
+
 	timelineX = timeLine.scrollWidth
 	playheads.forEach(playhead => {
 		playhead.style.transform = "translateX(" + timelineX + "px"
@@ -506,17 +513,19 @@ function playSong() {
 		return
 	}
 
-	SongLoader.loadInstruments(song)
-	SongLoader.loadNotes(song)
+	// SamplerController.loadInstruments(song)
+	// SamplerController.loadNotes(song)
 
 	setTimeout(() => {
-		SongLoader.playSong(song)
+		animatePlayheads()
+		SamplerController.playSong(song, samplers, /* Playhead position*/)
 		playheadsId = setInterval(animatePlayheads, 500)
 	}, 1000);
 }
 
 function pauseSong() {
 	clearInterval(playheadsId)
+	playheadsId = null
 
 	playheads.forEach(playhead => {
 		playhead.style.transition = null
@@ -525,9 +534,9 @@ function pauseSong() {
 }
 
 // Load instrument's sampler
-function loadSampler(instrumentName) {
-	return SampleLibrary.load({instruments:instrumentName})
-}
+// function loadSampler(instrumentName) {
+// 	return SampleLibrary.load({instruments:instrumentName})
+// }
 
 Tone.Transport.bpm.value = tempo
 
