@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Apr 21, 2024 alle 15:57
--- Versione del server: 10.4.32-MariaDB
--- Versione PHP: 8.2.12
+-- Generation Time: May 09, 2024 at 06:22 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.0.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `genres`
+-- Table structure for table `genres`
 --
 
 CREATE TABLE `genres` (
@@ -33,7 +33,7 @@ CREATE TABLE `genres` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dump dei dati per la tabella `genres`
+-- Dumping data for table `genres`
 --
 
 INSERT INTO `genres` (`id`, `name`) VALUES
@@ -90,7 +90,7 @@ INSERT INTO `genres` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `instruments`
+-- Table structure for table `instruments`
 --
 
 CREATE TABLE `instruments` (
@@ -100,7 +100,7 @@ CREATE TABLE `instruments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dump dei dati per la tabella `instruments`
+-- Dumping data for table `instruments`
 --
 
 INSERT INTO `instruments` (`id`, `name`, `file_path`) VALUES
@@ -128,26 +128,32 @@ INSERT INTO `instruments` (`id`, `name`, `file_path`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `music`
+-- Table structure for table `music`
 --
 
 CREATE TABLE `music` (
   `id` int(11) NOT NULL,
   `title` varchar(50) NOT NULL,
-  `notes` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`notes`)),
+  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `duration` int(3) NOT NULL,
   `release_date` date NOT NULL,
   `rating` decimal(3,1) NOT NULL,
-  `file_path` varchar(100) NOT NULL,
   `id_user` int(11) NOT NULL,
   `id_genre` int(11) NOT NULL,
-  `id_music_remix` int(11) NOT NULL
+  `id_music_remix` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `music`
+--
+
+INSERT INTO `music` (`id`, `title`, `data`, `duration`, `release_date`, `rating`, `id_user`, `id_genre`, `id_music_remix`) VALUES
+(1, 'Canzone del puzzo', '\r\n      {\r\n       	\"tracks\": {\r\n            \"2\": {\r\n                \"instrument\": \"piano\",\r\n                \"notes\": {\r\n                    \"1;1\": \"A1,1n,+0\",\r\n                    \"2;2\": \"A#1,2n,+.25\",\r\n                    \"3;3\": \"A3,10n,+.5\"\r\n                }\r\n            }\r\n        },\r\n        \"tempo\": 120,\r\n        \"duration\": 3000\r\n      }', 3000, '0000-00-00', 10.0, 1, 1, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -158,32 +164,33 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dump dei dati per la tabella `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`) VALUES
-(1, 'Admin', 'admin@mixfinity.it', '10c4981bb793e1698a83aea43030a388');
+(1, 'Admin', 'admin@mixfinity.it', '10c4981bb793e1698a83aea43030a388'),
+(2, '', '', 'd41d8cd98f00b204e9800998ecf8427e');
 
 --
--- Indici per le tabelle scaricate
+-- Indexes for dumped tables
 --
 
 --
--- Indici per le tabelle `genres`
+-- Indexes for table `genres`
 --
 ALTER TABLE `genres`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Indici per le tabelle `instruments`
+-- Indexes for table `instruments`
 --
 ALTER TABLE `instruments`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `name` (`name`,`file_path`);
 
 --
--- Indici per le tabelle `music`
+-- Indexes for table `music`
 --
 ALTER TABLE `music`
   ADD PRIMARY KEY (`id`),
@@ -192,46 +199,46 @@ ALTER TABLE `music`
   ADD KEY `id_user` (`id_user`) USING BTREE;
 
 --
--- Indici per le tabelle `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT per le tabelle scaricate
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT per la tabella `genres`
+-- AUTO_INCREMENT for table `genres`
 --
 ALTER TABLE `genres`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
--- AUTO_INCREMENT per la tabella `instruments`
+-- AUTO_INCREMENT for table `instruments`
 --
 ALTER TABLE `instruments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- AUTO_INCREMENT per la tabella `music`
+-- AUTO_INCREMENT for table `music`
 --
 ALTER TABLE `music`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT per la tabella `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- Limiti per le tabelle scaricate
+-- Constraints for dumped tables
 --
 
 --
--- Limiti per la tabella `music`
+-- Constraints for table `music`
 --
 ALTER TABLE `music`
   ADD CONSTRAINT `music_ibfk_1` FOREIGN KEY (`id_music_remix`) REFERENCES `music` (`id`);
