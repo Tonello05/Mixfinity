@@ -1,21 +1,3 @@
-<?php
-	require "../php/connect.php";
-
-	if(isset($_GET['id_song'])){
-		$json = null;
-		$id_song = $_GET['id_song'];
-		$sql = "SELECT notes FROM music WHERE id = '$id_song'";
-
-		try {
-			$response = $conn->query($sql);
-
-			if($response->num_rows == 1){
-				$json = $response->fetch_assoc()['notes'];
-			}
-		} catch (\Throwable $th) {
-		}
-	}
-?>
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -29,7 +11,27 @@
 	<title>Mixfinity</title>
 </head>
 <body>
-<header>
+<?php
+	// Page link ../?id_song=songId
+	require "../php/connect.php";
+
+	if(isset($_GET['id_song'])){
+		$songJson = null;
+		$id_song = $_GET["id_song"];
+		$sql = "SELECT data FROM music WHERE id = $id_song";
+
+		try {
+			$res = $conn->query($sql);
+			if($res->num_rows == 1){
+				$songJson= $res->fetch_assoc()['data'];
+			}
+		} catch (Exception $e) {
+			echo "Error while reading song from database<br/>$e";
+			return;
+		}
+	}
+?>	
+	<header>
 		<div class="toolbar">
 			<button class="interactable">File</button>
 			<button class="interactable">Edit</button>
@@ -149,14 +151,21 @@
 			</div>
 		</div>
 	</div>
+	<div class="background"></div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="../js/script.js" type = "module"></script>
+<?php
+	if (!empty($songJson)) {
+?>
 <script type="module">
-	import { SongLoader } from "../js/SongLoader.js";
+	import { SongLoader } from "../js/script.js";
 
-	var data = <?php echo $json;?>;
+	var data = <?php echo $songJson;?>;
 	SongLoader.loadSong(data)
 </script>
+<?php
+	}
+?>
 </html>

@@ -36,7 +36,7 @@ let notes = document.querySelectorAll(".note")
 
 // Note
 let note
-let noteWidth = 1
+let currentNoteWidth = 1
 let notePosX = 0, notePosY = 0
 let resizePosX = 0
 let noteMoved = false
@@ -131,13 +131,13 @@ function mouseMovement(event) {
 		}
 
 		// Play the notes
-		samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), noteWidth + "n")
+		samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), currentNoteWidth + "n")
 
 	} else if (trackMode == "track-mode-resize") {
 		let newNoteWidth = Math.max(Number.parseInt(note.getAttribute("noteWidth")) + (notePosX - resizePosX), 1)
 
 		note.style.width = (newNoteWidth * noteWidthPx) + "px"
-		noteWidth = newNoteWidth
+		currentNoteWidth = newNoteWidth
 	}
 }
 
@@ -148,7 +148,7 @@ function noteClick(event) {
 	}
 
 	if (trackMode == "track-mode-select") {
-		samplers[trackContainer.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), noteWidth + "n")
+		samplers[trackContainer.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), currentNoteWidth + "n")
 	} else if (trackMode == "track-mode-remove") {
 		let note = event.target
 		let track = note.parentElement
@@ -172,7 +172,7 @@ function noteMouseDown(event) {
 		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
 	} else if (trackMode == "track-mode-resize") {
 		note = event.target
-		noteWidth = note.getAttribute("notewidth")
+		currentNoteWidth = note.getAttribute("notewidth")
 		resizePosX = notePosX
 		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
 	}
@@ -205,10 +205,10 @@ function mouseUp(event) {
 		noteY = notePos[1]
 	}
 
-	note.setAttribute("noteWidth", noteWidth)
+	note.setAttribute("noteWidth", currentNoteWidth)
 
 	// Add note to song data
-	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + (noteWidth + "n") + "," + noteX * (60 / tempo)
+	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + (currentNoteWidth + "n") + "," + noteX * (60 / tempo)
 	note = null;
 }
 
@@ -225,20 +225,10 @@ function trackMouseDown(event) {
 	}
 
 	// Create note
-	note = document.createElement("div")
-	note.classList.add("note")
-	note.style.left = (notePosX * noteWidthPx) + "px"
-	note.style.top = (notePosY * noteHeightPx) + "px"
-	note.style.backgroundColor = "rgb(" + track.getAttribute("note-color") + ")"
-	note.style.pointerEvents = "none"
-	note.style.width = (noteWidth * noteWidthPx) + "px"
-	note.setAttribute("noteWidth", noteWidth)
-	note.setAttribute("notepos", notePosX + ";" + notePosY)
-	note.addEventListener("click", noteClick)
-	note.addEventListener("mousedown", noteMouseDown)
+	note = newNote(notePosX, notePosY, currentNoteWidth, track.getAttribute("note-color"))
 
 	// Play the notes
-	samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), noteWidth + "n")
+	samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), currentNoteWidth + "n")
 
 	// Insert note into track
 	track.appendChild(note)
@@ -281,6 +271,22 @@ function toggleEditMode(event) {
 	timelineScroll()
 }
 
+function newNote(noteX, noteY, noteWidth, noteColor) {
+	let createdNote = document.createElement("div")
+	createdNote.classList.add("note")
+	createdNote.style.left = (noteX * noteWidthPx) + "px"
+	createdNote.style.top = (noteY * noteHeightPx) + "px"
+	createdNote.style.backgroundColor = "rgb(" + noteColor + ")"
+	createdNote.style.pointerEvents = "none"
+	createdNote.style.width = (noteWidth * noteWidthPx) + "px"
+	createdNote.setAttribute("noteWidth", noteWidth)
+	createdNote.setAttribute("notepos", noteX + ";" + noteY)
+	createdNote.addEventListener("click", noteClick)
+	createdNote.addEventListener("mousedown", noteMouseDown)
+
+	return createdNote
+}
+
 function removeTrack(event) {
 	let trackEditor = event.target.parentElement.parentElement
 	let trackId = trackEditor.getAttribute("track-id")
@@ -291,24 +297,7 @@ function removeTrack(event) {
 	delete samplers[trackId]
 }
 
-function createTrack(event) {
-	let instrumentName
-	if (event.target.tagName != "DIV") {
-		instrumentName = event.target.parentElement.id
-	} else {
-		instrumentName = event.target.id
-	}
-
-	trackIdCounter++;
-
-	// Add the sampler for the instrument of the track
-	samplers[trackIdCounter] = SamplerController.loadSampler(instrumentName, /* AvailableSounds */)
-	samplers[trackIdCounter].volume.value = volume
-
-	// Add track object to song data
-	song.tracks[trackIdCounter] = {"instrument": instrumentName, "notes": {}}
-
-	// Create track
+function newTrackDiv(instrumentName) {
 	let trackEditor = document.createElement("div")
 	let trackEditorTop = document.createElement("div")
 	let trackContainer = document.createElement("div")
@@ -415,12 +404,34 @@ function createTrack(event) {
 
 	lineContainer.appendChild(hSeperator)
 
-	// Add track to track-editor-container
-	trackEditorContainer.appendChild(trackEditor)
 	tracks = document.querySelectorAll('.track');
-	playheads = document.querySelectorAll(".playhead")
 
-	// console.log(song);
+	return trackEditor
+}
+
+function createTrack(event) {
+	let instrumentName
+	if (event.target.tagName != "DIV") {
+		instrumentName = event.target.parentElement.id
+	} else {
+		instrumentName = event.target.id
+	}
+
+	trackIdCounter++;
+
+	// Add the sampler for the instrument of the track
+	samplers[trackIdCounter] = SamplerController.loadSampler(instrumentName, /* AvailableSounds */)
+	samplers[trackIdCounter].volume.value = volume
+
+	// Add track object to song data
+	song.tracks[trackIdCounter] = {"instrument": instrumentName, "notes": {}}
+
+	// Create track
+	let trackEditor = newTrackDiv(instrumentName)
+
+	// Add trackEditor to trackEditorContainer
+	trackEditorContainer.appendChild(trackEditor)
+	playheads = document.querySelectorAll(".playhead")
 }
 
 function timelineScroll() {
@@ -455,7 +466,8 @@ function tempoChanged() {
 	let value = clamp(tempoBox.value, MIN_TEMPO, MAX_TEMPO)
 	tempo = value
 	tempoBox.value = tempo
-	Tone.Transport.bpm.value = tempo
+	Tone.getTransport().bpm.value = tempo
+	// TODO: fix bpm not changing after sampler are created
 }
 
 function timelineToStart() {
@@ -513,7 +525,7 @@ function onKeyPress(event) {
 function animatePlayheads() {
 	let seconds = ((60 / tempo) * 4)
 	let pos = new WebKitCSSMatrix(window.getComputedStyle(playheads[0]).transform).m41
-	let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / noteWidth)))
+	let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / currentNoteWidth)))
 
 	timelineX = pos
 	playheads.forEach(playhead => {
@@ -547,9 +559,11 @@ function pauseSong() {
 function stopSong() {
 	pauseSong()
 	timelineToStart()
+
+	console.log(song);
 }
 
-Tone.Transport.bpm.value = tempo
+Tone.getTransport().bpm.value = tempo
 
 instruments.forEach(instrument => {
 	instrument.addEventListener("click", createTrack)
@@ -574,6 +588,52 @@ for (let i = 0; i < songDuration / noteWidthPx; i++) {
 	vSeparator.style.left = (i * noteWidthPx) + "px"
 
 	timeLine.appendChild(vSeparator)
+}
+
+export var SongLoader = {
+	loadSong: function(songJson) {
+		console.log(songJson);
+
+		tempo = songJson.tempo
+		songDuration = songJson.duration
+		tempoBox.value = tempo
+
+		for (const trackId in songJson.tracks) {
+			let trackData = songJson.tracks[trackId]
+			let instrumentName = trackData.instrument
+
+			trackIdCounter++
+
+			// Add the sampler for the instrument of the track
+			samplers[trackIdCounter] = SamplerController.loadSampler(instrumentName, /* AvailableSounds */)
+			samplers[trackIdCounter].volume.value = volume
+
+			// Add track object to song data
+			song.tracks[trackIdCounter] = {"instrument": instrumentName, "notes": {}}
+
+			// Add trackEditor to trackEditorContainer
+			let trackEditor = newTrackDiv(instrumentName)
+			trackEditorContainer.appendChild(trackEditor)
+			playheads = document.querySelectorAll(".playhead")
+
+			let track = trackEditor.querySelector(".track")
+			for (const noteId in trackData.notes) {
+				let noteData = trackData.notes[noteId]
+				let noteWidth = noteData.split(",")[1].split("n")[0]
+				let notePos = noteId.split(";")
+
+				let songNote = newNote(notePos[0], notePos[1], noteWidth, track.getAttribute("note-color"))
+				songNote.style.pointerEvents = "all"
+
+				// Add note to song data
+				song.tracks[trackEditor.getAttribute("track-id")].notes[notePos[0] + ";" + notePos[1]] = getNoteSound(notePos[1]) + "," + (noteWidth + "n") + "," + notePos[0] * (60 / tempo)
+
+				// Insert note into track
+				track.appendChild(songNote)
+				notes = document.querySelectorAll(".note")
+			}
+		}
+	}
 }
 
 tempoBox.addEventListener("change", tempoChanged)

@@ -10,6 +10,7 @@
 }
 
 body {
+	font-family: 'Ubuntu', sans-serif;
 	background-image: url("../img/background.png");
 	background-repeat: repeat;
 }
@@ -42,7 +43,7 @@ html::-webkit-scrollbar {
 	padding: 14px 16px;
 	text-decoration: none;
 	font-size: 17px;
-	font-family: "Montserrat", sans-serif;
+	/* font-family: "Montserrat", sans-serif; */
 	font-optical-sizing: auto;
 	font-weight: 678;
 	font-style: normal;
@@ -73,7 +74,7 @@ html::-webkit-scrollbar {
 	text-align: center;
 	font-size: 10vw;
 	color: white;
-	font-family: "Montserrat", sans-serif;
+	/* font-family: "Montserrat", sans-serif; */
 	font-optical-sizing: auto;
 	font-weight: 678;
 	font-style: normal;
@@ -110,7 +111,7 @@ html::-webkit-scrollbar {
 	font-size: 2vw;
 	padding-top: 6%;
 	color: white;
-	font-family: "Montserrat", sans-serif;
+	/* font-family: "Montserrat", sans-serif; */
 	font-optical-sizing: auto;
 	font-weight: 678;
 	font-style: normal;
