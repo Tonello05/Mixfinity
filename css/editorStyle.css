@@ -45,7 +45,8 @@ button span {
 }
 
 body {
-	background-color: rgb(30, 30, 30);
+	background-image: url("../img/background.png");
+	background-repeat: repeat;
 	font-family: 'Ubuntu', sans-serif;
 	overflow-x: hidden;
 	overflow-y: hidden;
