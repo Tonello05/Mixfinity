@@ -7,13 +7,13 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-	<link rel="stylesheet" href="../css/editorStyle.css">
+	<link rel="stylesheet" href="../../css/editorStyle.css">
 	<title>Mixfinity</title>
 </head>
 <body>
 <?php
 	// Page link ../?id_song=songId
-	require "../php/connect.php";
+	require "../../php/import/connect.php";
 
 	if(isset($_GET['id_song'])){
 		$songJson = null;
@@ -155,12 +155,12 @@
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="../js/script.js" type = "module"></script>
+<script src="../../js/editorController.js" type = "module"></script>
 <?php
 	if (!empty($songJson)) {
 ?>
 <script type="module">
-	import { SongLoader } from "../js/script.js";
+	import { SongLoader } from "../../js/editorController.js";
 
 	var data = <?php echo $songJson;?>;
 	SongLoader.loadSong(data)

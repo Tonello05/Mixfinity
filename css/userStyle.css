@@ -11,6 +11,7 @@
 
 body {
 	background-image: url("../img/background.png");
+	font-family: 'Ubuntu', sans-serif;
 	background-repeat: repeat;
 	overflow-x: hidden;
 	overflow-y: hidden;

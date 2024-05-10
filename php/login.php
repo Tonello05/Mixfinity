@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "connect.php";
+require "./import/connect.php";
 
 $email = strtolower($_POST['email']);
 $password = md5($_POST['password']);

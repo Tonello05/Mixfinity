@@ -1,6 +1,6 @@
 <?php
 session_start();
-require "connect.php";
+require "./import/connect.php";
 
 if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 	$email = $_SESSION['email'];

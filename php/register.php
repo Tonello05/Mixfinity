@@ -1,5 +1,5 @@
 <?php
-require "connect.php";
+require "./import/connect.php";
 
 $username = ucfirst(strtolower($_POST["username"]));
 $email = strtolower($_POST["email"]);

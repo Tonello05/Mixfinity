@@ -1,4 +1,3 @@
-import { SampleLibrary } from "../prova_tone_js/tonejs-instruments-master/tonejs-instruments-master/Tonejs-Instruments.js";
 import { SamplerController } from "./samplerController.js"
 
 const synth = new Tone.Synth().toDestination()
@@ -32,7 +31,6 @@ let timelineX = 0
 let instruments = document.querySelectorAll('.instrument');
 let tracks = document.querySelectorAll('.track');
 let playheads = document.querySelectorAll(".playhead")
-let notes = document.querySelectorAll(".note")
 
 // Note
 let note
@@ -232,7 +230,6 @@ function trackMouseDown(event) {
 
 	// Insert note into track
 	track.appendChild(note)
-	notes = document.querySelectorAll(".note")
 }
 
 function toggleEditMode(event) {
@@ -630,7 +627,6 @@ export var SongLoader = {
 
 				// Insert note into track
 				track.appendChild(songNote)
-				notes = document.querySelectorAll(".note")
 			}
 		}
 	}
