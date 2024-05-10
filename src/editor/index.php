@@ -7,6 +7,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+	<link rel="stylesheet" href="../../css/formStyle.css">
 	<link rel="stylesheet" href="../../css/editorStyle.css">
 	<title>Mixfinity</title>
 </head>
@@ -38,28 +39,54 @@
 	if ($res->num_rows == 0) {
 		echo "Instruments not found in database<br/>";
 		return;
+	} else {
+		$instruments = $res;
+	}
+
+	// Get genres from database
+	$sql = "SELECT * FROM genres
+			ORDER BY name";
+	$res = $conn->query($sql);
+
+	if ($res->num_rows == 0) {
+	echo "Genres not found in database<br/>";
+	return;
+	} else {
+	$genres = $res;
 	}
 ?>	
-	<header>
-		<div class="toolbar">
-			<button class="interactable">File</button>
-			<button class="interactable">Edit</button>
-			<!-- <a class="interactable" href="">Another one</a> -->
-			<!-- <a class="interactable" href="">idk bruh</a> -->
+	<header id="header" class="">
+		<div class="toolbar topbar-div">
+			<div>
+				<button class="interactable">File</button>
+				<div class="dropdown" hidden>
+					<button id="new-editor" class="interactable">New Editor</button>
+					<button id="save" class="interactable">Save</button>
+					<button id="exit" class="interactable">Exit</button>
+				</div>
+			</div>
+			<div>
+				<button class="interactable">Edit</button>
+				<div class="dropdown" hidden>
+					<button id="new-editor" class="interactable">New Editor</button>
+					<button id="save" class="interactable">Save</button>
+					<button id="exit" class="interactable">Exit</button>
+				</div>
+			</div>
 		</div>
-		<div class="final-toolbar">
-			<button class="interactable" href="">Credits</button>
-			<button class="interactable" href="">Publish</button>
-			<button class="interactable" href="">User</button>
+		<div class="final-toolbar topbar-div">
+			<button class="interactable">Credits</button>
+			<button id="publish" class="interactable">Publish</button>
+			<button class="interactable">User</button>
 		</div>
 	</header>
 
-	<div class="container">
+	<div id="container" class="container">
 		<!-- Instrument list -->
 		<aside>
 			<div class="instrument-bar">
 				<?php
-				foreach ($res as $instrument) {
+				foreach ($instruments as $instrument) {
 					$name = $instrument["name"];
 					$folderUrl = $instrument["folder_url"];
 					$notes = $instrument["notes"];
@@ -158,11 +185,62 @@
 			</div>
 		</div>
 	</div>
-	<div class="background"></div>
+
+	<div hidden id="publish-container" class="publish">
+		<div class="publish-container">
+			<div class="form-container">
+				<h3>Publish Song</h3>
+				<form name="input" id="publish-form" action="../../php/publishSong.php" method="post">
+					<div class="input-container">
+						<input type="text" min="3" maxlength="30" placeholder="Song name" name="name" required>
+						<div class="custom-select">
+							<select name="genre" id="select-form">
+								<?php
+								foreach ($genres as $genre) {
+									$id = $genre["id"];
+									?>
+									<option value="<?php echo $id;?>"></option>
+									<?php
+								}
+								?>
+							</select>
+							<div id="genre-header" class="select-header interactable">
+								<div class="select-text">Select song genre</div>
+								<div class="select-arrow">
+									<span id="genre-arrow" class="material-symbols-rounded">expand_more</span>
+								</div>
+							</div>
+							<div id="genre-select" hidden class="select-container">
+								<div class="scroll-container">
+								<?php
+								foreach ($genres as $genre) {
+									$id = $genre["id"];
+									$name = $genre["name"];
+									?>
+									<div genre-id="<?php echo $id;?>" class="genre-item interactable"><?php echo $name;?></div>
+									<?php
+								}
+								?>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="bottom-container">
+						<div></div>
+						<div id="genre-buttons">
+							<button id="cancel-submit" type="button" class="interactable">Cancel</button>
+							<input id="genre-submit" type="submit" value="Publish">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" integrity="sha512-jduERlz7En1IUZR54bqzpNI64AbffZWR//KJgF71SJ8D8/liKFZ+s1RxmUmB+bhCnIfzebdZsULwOrbVB5f3nQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="../../js/editorController.js" type = "module"></script>
+<script src="../../js/publishSong.js"></script>
 <?php
 	if (!empty($songJson)) {
 ?>

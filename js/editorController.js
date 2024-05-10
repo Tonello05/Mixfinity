@@ -206,7 +206,9 @@ function mouseUp(event) {
 	note.setAttribute("noteWidth", currentNoteWidth)
 
 	// Add note to song data
-	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + (currentNoteWidth + "n") + "," + noteX * (60 / tempo)
+
+	// TODO (((tempo / 60) / 4) * currentNoteWidth) ?
+	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + (((tempo / 60) / 4) * currentNoteWidth) + "," + noteX * (60 / tempo)
 	note = null;
 }
 
@@ -400,9 +402,6 @@ function newTrackDiv(instrumentName) {
 	}
 
 	lineContainer.appendChild(hSeperator)
-
-	tracks = document.querySelectorAll('.track');
-
 	return trackEditor
 }
 
@@ -426,6 +425,7 @@ function createTrack(event) {
 
 	// Add trackEditor to trackEditorContainer
 	trackEditorContainer.appendChild(trackEditor)
+	tracks = document.querySelectorAll('.track');
 	playheads = document.querySelectorAll(".playhead")
 }
 
@@ -462,6 +462,7 @@ function tempoChanged() {
 	tempo = value
 	tempoBox.value = tempo
 	song.tempo = tempo
+	Tone.start()
 	Tone.getTransport().bpm.value = tempo
 	// TODO: fix bpm not changing after sampler are created
 }
@@ -538,7 +539,7 @@ function playSong() {
 
 	animatePlayheads()
 	SamplerController.playSong(song, samplers, /* Playhead position*/)
-	playheadsId = setInterval(animatePlayheads, 100)
+	playheadsId = setInterval(animatePlayheads, 500)
 }
 
 function pauseSong() {
@@ -611,19 +612,20 @@ export var SongLoader = {
 			// Add trackEditor to trackEditorContainer
 			let trackEditor = newTrackDiv(instrumentName)
 			trackEditorContainer.appendChild(trackEditor)
+			tracks = document.querySelectorAll('.track');
 			playheads = document.querySelectorAll(".playhead")
 
 			let track = trackEditor.querySelector(".track")
 			for (const noteId in trackData.notes) {
 				let noteData = trackData.notes[noteId]
-				let noteWidth = noteData.split(",")[1].split("n")[0]
+				let noteWidth = noteData.split(",")[1]
 				let notePos = noteId.split(";")
 
 				let songNote = newNote(notePos[0], notePos[1], noteWidth, track.getAttribute("note-color"))
 				songNote.style.pointerEvents = "all"
 
 				// Add note to song data
-				song.tracks[trackEditor.getAttribute("track-id")].notes[notePos[0] + ";" + notePos[1]] = getNoteSound(notePos[1]) + "," + (noteWidth + "n") + "," + notePos[0] * (60 / tempo)
+				song.tracks[trackEditor.getAttribute("track-id")].notes[notePos[0] + ";" + notePos[1]] = getNoteSound(notePos[1]) + "," + (noteWidth) + "," + notePos[0] * (60 / tempo)
 
 				// Insert note into track
 				track.appendChild(songNote)
