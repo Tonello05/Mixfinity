@@ -407,17 +407,15 @@ function newTrackDiv(instrumentName) {
 }
 
 function createTrack(event) {
-	let instrumentName
-	if (event.target.tagName != "DIV") {
-		instrumentName = event.target.parentElement.id
-	} else {
-		instrumentName = event.target.id
-	}
+	let instrumentDiv = event.target
+	let instrumentName = instrumentDiv.id
+	let folderUrl = instrumentDiv.getAttribute("folder_url")
+	let notes = instrumentDiv.getAttribute("notes")
 
 	trackIdCounter++;
 
 	// Add the sampler for the instrument of the track
-	samplers[trackIdCounter] = SamplerController.loadSampler(instrumentName, /* AvailableSounds */)
+	samplers[trackIdCounter] = SamplerController.loadSampler(folderUrl, notes)
 	samplers[trackIdCounter].volume.value = volume
 
 	// Add track object to song data
@@ -463,6 +461,7 @@ function tempoChanged() {
 	let value = clamp(tempoBox.value, MIN_TEMPO, MAX_TEMPO)
 	tempo = value
 	tempoBox.value = tempo
+	song.tempo = tempo
 	Tone.getTransport().bpm.value = tempo
 	// TODO: fix bpm not changing after sampler are created
 }
@@ -556,8 +555,6 @@ function pauseSong() {
 function stopSong() {
 	pauseSong()
 	timelineToStart()
-
-	console.log(song);
 }
 
 Tone.getTransport().bpm.value = tempo
@@ -598,11 +595,14 @@ export var SongLoader = {
 		for (const trackId in songJson.tracks) {
 			let trackData = songJson.tracks[trackId]
 			let instrumentName = trackData.instrument
+			let instrumentDiv = document.getElementById(instrumentName)
+			let folderUrl = instrumentDiv.getAttribute("folder_url")
+			let instrumentNotes = instrumentDiv.getAttribute("notes")
 
 			trackIdCounter++
 
 			// Add the sampler for the instrument of the track
-			samplers[trackIdCounter] = SamplerController.loadSampler(instrumentName, /* AvailableSounds */)
+			samplers[trackIdCounter] = SamplerController.loadSampler(folderUrl, instrumentNotes)
 			samplers[trackIdCounter].volume.value = volume
 
 			// Add track object to song data

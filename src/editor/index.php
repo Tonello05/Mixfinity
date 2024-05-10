@@ -16,7 +16,6 @@
 	require "../../php/import/connect.php";
 
 	if(isset($_GET['id_song'])){
-		$songJson = null;
 		$id_song = $_GET["id_song"];
 		$sql = "SELECT data FROM music WHERE id = $id_song";
 
@@ -29,6 +28,16 @@
 			echo "Error while reading song from database<br/>$e";
 			return;
 		}
+	}
+
+	// Get instruments from database
+	$sql = "SELECT * FROM instruments
+			ORDER BY name";
+	$res = $conn->query($sql);
+
+	if ($res->num_rows == 0) {
+		echo "Instruments not found in database<br/>";
+		return;
 	}
 ?>	
 	<header>
@@ -49,22 +58,20 @@
 		<!-- Instrument list -->
 		<aside>
 			<div class="instrument-bar">
-				<div class="interactable instrument" id="piano">
-					<span class="material-symbols-rounded">music_note</span>
-					<h3>piano</h3>
-				</div>
-				<div class="interactable instrument" id="tuba">
-					<span class="material-symbols-rounded">music_note</span>
-					<h3>tuba</h3>
-				</div>
-				<div class="interactable instrument" id="violin">
-					<span class="material-symbols-rounded">music_note</span>
-					<h3>violin</h3>
-				</div>
-				<div class="interactable instrument" id="guitar-acoustic">
-					<span class="material-symbols-rounded">music_note</span>
-					<h3>acoustic guitar</h3>
-				</div>
+				<?php
+				foreach ($res as $instrument) {
+					$name = $instrument["name"];
+					$folderUrl = $instrument["folder_url"];
+					$notes = $instrument["notes"];
+
+					?>
+					<div class="interactable instrument" id="<?php echo $name;?>" folder_url="<?php echo $folderUrl;?>" notes="<?php echo $notes;?>">
+						<span class="material-symbols-rounded">music_note</span>
+						<h3><?php echo $name;?></h3>
+					</div>
+					<?php
+				}
+				?>
 			</div>
 		</aside>
 		<!-- End instrument list -->

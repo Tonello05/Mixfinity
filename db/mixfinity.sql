@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 09, 2024 at 06:22 PM
+-- Generation Time: May 10, 2024 at 06:35 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -73,7 +73,7 @@ INSERT INTO `genres` (`id`, `name`) VALUES
 (45, 'Post-rock'),
 (35, 'Psychedelic'),
 (13, 'Punk'),
-(8, 'R&B (Rhythm and Blues)'),
+(8, 'R&B'),
 (9, 'Reggae'),
 (29, 'Reggaeton'),
 (1, 'Rock'),
@@ -96,34 +96,35 @@ INSERT INTO `genres` (`id`, `name`) VALUES
 CREATE TABLE `instruments` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `file_path` varchar(100) NOT NULL
+  `folder_url` varchar(100) NOT NULL,
+  `notes` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `instruments`
 --
 
-INSERT INTO `instruments` (`id`, `name`, `file_path`) VALUES
-(1, 'bass-electric', ''),
-(2, 'bassoon', ''),
-(3, 'cello', ''),
-(4, 'clarinet', ''),
-(5, 'contrabass', ''),
-(6, 'flute', ''),
-(7, 'french-horn', ''),
-(8, 'guitar-acoustic', ''),
-(9, 'guitar-electric', ''),
-(10, 'guitar-nylon', ''),
-(11, 'harmonium', ''),
-(12, 'harp', ''),
-(13, 'organ', ''),
-(14, 'piano', ''),
-(15, 'saxophone', ''),
-(16, 'trombone', ''),
-(17, 'trumpet', ''),
-(18, 'tuba', ''),
-(19, 'violin', ''),
-(20, 'xylophone', '');
+INSERT INTO `instruments` (`id`, `name`, `folder_url`, `notes`) VALUES
+(1, 'Bass electric', 'https://nbrosowsky.github.io/tonejs-instruments/samples/bass-electric/', 'A#1,A#2,A#3,A#4,C#1,C#2,C#3,C#4,C#5,E1,E2,E3,E4,G1,G2,G3,G4'),
+(2, 'Bassoon', 'https://nbrosowsky.github.io/tonejs-instruments/samples/bassoon/', 'A2,A3,A4,C3,C4,C5,E4,G2,G3,G4'),
+(3, 'Cello', 'https://nbrosowsky.github.io/tonejs-instruments/samples/cello/', 'A2,A3,A4,A#2,A#3,B2,B3,B4,C2,C3,C4,C5,C#3,C#4,D2,D3,D4,D#2,D#3,D#4,E2,E3,E4,F2,F3,F4,F#3,F#4,G2,G3,G4,G#2,G#3,G#4'),
+(4, 'Clarinet', 'https://nbrosowsky.github.io/tonejs-instruments/samples/clarinet/', 'A#3,A#4,A#5,D3,D4,D5,D6,F3,F4,F5,F#6'),
+(5, 'Contrabass', 'https://nbrosowsky.github.io/tonejs-instruments/samples/contrabass/', 'A2,A#1,B3,C2,C#3,D2,E2,E3,F#1,F#2,G1,G#2,G#3'),
+(6, 'Flute', 'https://nbrosowsky.github.io/tonejs-instruments/samples/flute/', 'A4,A5,A6,C4,C5,C6,C7,E4,E5,E6'),
+(7, 'French horn', 'https://nbrosowsky.github.io/tonejs-instruments/samples/french-horn/', 'A1,A3,C2,C4,D3,D5,D#2,F3,F5,G2'),
+(8, 'Guitar acoustic', 'https://nbrosowsky.github.io/tonejs-instruments/samples/guitar-acoustic/', 'A2,A3,A4,A#2,A#3,A#4,B2,B3,B4,C3,C4,C5,C#3,C#4,C#5,D2,D3,D4,D5,D#2,D#3,D#4,E2,E3,E4,F2,F3,F4,F#2,F#3,F#4,G2,G3,G4,G#2,G#3,G#4'),
+(9, 'Guitar electric', 'https://nbrosowsky.github.io/tonejs-instruments/samples/guitar-electric/', 'A2,A3,A4,A5,C3,C4,C5,C6,C#2,D#3,D#4,D#5,E2,F#2,F#3,F#4,F#5'),
+(10, 'Guitar nylon', 'https://nbrosowsky.github.io/tonejs-instruments/samples/guitar-nylon/', 'A2,A3,A4,A5,A#5,B1,B2,B3,B4,C#3,C#4,C#5,D2,D3,D5,D#4,E2,E3,E4,E5,F#2,F#3,F#4,F#5,G3,G5,G#2,G#4,G#5'),
+(11, 'Harmonium', 'https://nbrosowsky.github.io/tonejs-instruments/samples/harmonium/', 'A2,A3,A4,A#2,A#3,A#4,B2,B3,B4,C2,C3,C4,C5,C#2,C#3,C#4,C#5,D2,D3,D4,D5,D#2,D#3,D#4,E2,E3,E4,F2,F3,F4,F#2,F#3,G2,G3,G4,G#2,G#3,G#4'),
+(12, 'Harp', 'https://nbrosowsky.github.io/tonejs-instruments/samples/harp/', 'A2,A4,A6,B1,B3,B5,B6,C3,C5,D2,D4,D6,D7,E1,E3,E5,F2,F4,F6,F7,G1,G3,G5'),
+(13, 'Organ', 'https://nbrosowsky.github.io/tonejs-instruments/samples/organ/', 'A1,A2,A3,A4,A5,C1,C2,C3,C4,C5,C6,D#1,D#2,D#3,D#4,D#5,F#1,F#2,F#3,F#4,F#5'),
+(14, 'Piano', 'https://tonejs.github.io/audio/salamander/', 'A0,A1,A2,A3,A4,A5,A6,A7,C1,C2,C3,C4,C5,C6,C7,C8,D#1,D#2,D#3,D#4,D#5,D#6,D#7,F#1,F#2,F#3,F#4,F#5,F#6,F#7'),
+(15, 'Saxophone', 'https://nbrosowsky.github.io/tonejs-instruments/samples/saxophone/', 'A4,A5,A#3,A#4,B3,B4,C4,C5,C#3,C#4,C#5,D3,D4,D5,D#3,D#4,D#5,E3,E4,E5,F3,F4,F5,F#3,F#4,F#5,G3,G4,G5,G#3,G#4,G#5'),
+(16, 'Trombone', 'https://nbrosowsky.github.io/tonejs-instruments/samples/trombone/', 'A#1,A#2,A#3,C3,C4,C#2,C#4,D3,D4,D#2,D#3,D#4,F2,F3,F4,G#2,G#3'),
+(17, 'Trumpet', 'https://nbrosowsky.github.io/tonejs-instruments/samples/trumpet/', 'A3,A5,A#4,C4,C6,D5,D#4,F3,F4,F5,G4'),
+(18, 'Tuba', 'https://nbrosowsky.github.io/tonejs-instruments/samples/tuba/', 'A#1,A#2,A#3,D3,D4,D#2,F1,F2,F3'),
+(19, 'Violin', 'https://nbrosowsky.github.io/tonejs-instruments/samples/violin/', 'A3,A4,A5,A6,C4,C5,C6,C7,E4,E5,E6,G3,G4,G5,G6'),
+(20, 'Xylophone', 'https://nbrosowsky.github.io/tonejs-instruments/samples/xylophone/', 'C5,C6,C7,C8,G4,G5,G6,G7');
 
 -- --------------------------------------------------------
 
@@ -134,9 +135,9 @@ INSERT INTO `instruments` (`id`, `name`, `file_path`) VALUES
 CREATE TABLE `music` (
   `id` int(11) NOT NULL,
   `title` varchar(50) NOT NULL,
-  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`data`)),
   `duration` int(3) NOT NULL,
-  `release_date` date NOT NULL,
+  `release_date` date NOT NULL DEFAULT current_timestamp(),
   `rating` decimal(3,1) NOT NULL,
   `id_user` int(11) NOT NULL,
   `id_genre` int(11) NOT NULL,
@@ -148,7 +149,7 @@ CREATE TABLE `music` (
 --
 
 INSERT INTO `music` (`id`, `title`, `data`, `duration`, `release_date`, `rating`, `id_user`, `id_genre`, `id_music_remix`) VALUES
-(1, 'Canzone del puzzo', '\r\n      {\r\n       	\"tracks\": {\r\n            \"2\": {\r\n                \"instrument\": \"piano\",\r\n                \"notes\": {\r\n                    \"1;1\": \"A1,1n,+0\",\r\n                    \"2;2\": \"A#1,2n,+.25\",\r\n                    \"3;3\": \"A3,10n,+.5\"\r\n                }\r\n            }\r\n        },\r\n        \"tempo\": 120,\r\n        \"duration\": 3000\r\n      }', 3000, '0000-00-00', 10.0, 1, 1, NULL);
+(1, 'Canzone del puzzo', '\r\n      {\r\n       	\"tracks\": {\r\n            \"2\": {\r\n                \"instrument\": \"piano\",\r\n                \"notes\": {\r\n                    \"1;1\": \"A1,1n,+0\",\r\n                    \"2;2\": \"A#1,2n,+.25\",\r\n                    \"3;3\": \"A3,10n,+.5\"\r\n                }\r\n            }\r\n        },\r\n        \"tempo\": 120,\r\n        \"duration\": 3000\r\n      }', 3000, '2024-05-10', 10.0, 1, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -168,8 +169,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`) VALUES
-(1, 'Admin', 'admin@mixfinity.it', '10c4981bb793e1698a83aea43030a388'),
-(2, '', '', 'd41d8cd98f00b204e9800998ecf8427e');
+(1, 'Admin', 'admin@mixfinity.it', '10c4981bb793e1698a83aea43030a388');
 
 --
 -- Indexes for dumped tables
@@ -187,7 +187,7 @@ ALTER TABLE `genres`
 --
 ALTER TABLE `instruments`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`,`file_path`);
+  ADD UNIQUE KEY `name` (`name`,`folder_url`);
 
 --
 -- Indexes for table `music`

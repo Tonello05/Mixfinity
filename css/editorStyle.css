@@ -111,6 +111,10 @@ aside .instrument-bar div {
 	margin-left: 2rem;
 }
 
+.instrument * {
+	pointer-events: none;
+}
+
 /* TODO fix container not scaling properly on Y */
 .main-container {
 	height: 100%;
