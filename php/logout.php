@@ -5,7 +5,7 @@ require "./import/connect.php";
 $_SESSION['logged'] = false;
 
 unset($email);
-header("location: ../index.html");
+header("location: ../src/index.html");
 
 $conn->close();
 ?>
