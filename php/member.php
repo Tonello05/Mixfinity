@@ -66,12 +66,13 @@ if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 					<div class='title'>".$title."</div>
 					<br> <br><br>
 					".$duration." px <br><br>
-
 				</div>";
 		}
 
 	}else{
 		echo "non hai ancora creato nessuna canzone";
+		echo "<form action='../src/editor/index.php'>".
+			"<input type='submit' value='Crea ora!'></form>";
 	}
 ?>
 						</div>
@@ -79,7 +80,28 @@ if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 					<div class='saved-music'>
 						New music:
 						<div class='music-container'>
+<?php
+	if($response->num_rows > 0){
 
+		while($row = $response_all->fetch_assoc()){
+			$title = $row ['title'];
+			$duration = $row['duration'];
+			$rating = $row['rating'];
+			$id = $row['id'];
+
+			echo "<div class='music-card' id='".$id."'>
+					<br>
+					<div class='title'>".$title."</div>
+					<br> <br><br>
+					".$duration." px <br><br>
+
+				</div>";
+		}
+	}else{
+		echo "Non ci sono musiche create al momento :(";
+	}
+
+?>
 						<!--HERE the code to display all the songs -->
 
 						</div>
