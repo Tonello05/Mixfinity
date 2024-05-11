@@ -57,11 +57,6 @@
 ?>	
 	<header id="header" class="">
 		<div class="toolbar topbar-div">
-			<!-- cOLLEGARE CON PAGINA UTENTE, DA FIXARE IDK -->
-			<div>
-				<a href="../php/member.php"><button class="interactable">Home</button></a>
-			</div>
-
 			<div>
 				<button id="file" class="interactable dropdown-button">File</button>
 				<div class="dropdown" hidden>
