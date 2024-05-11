@@ -13,6 +13,7 @@ body {
 	font-family: 'Ubuntu', sans-serif;
 	background-image: url("../img/background.png");
 	background-repeat: repeat;
+	background-attachment: fixed;
 }
 
 html::-webkit-scrollbar {
@@ -26,15 +27,12 @@ html::-webkit-scrollbar {
   }
 
 /* NAVBAR */
- /* Add a black background color to the top navigation */
  .topnav {
 	background-color: #000000;
 	overflow: hidden;
     position: fixed;
     width: 100%;
 }
-  
-  /* Style the links inside the navigation bar */
   .topnav a {
 	float: left;
 	display: block;
@@ -43,26 +41,23 @@ html::-webkit-scrollbar {
 	padding: 14px 16px;
 	text-decoration: none;
 	font-size: 17px;
-	/* font-family: "Montserrat", sans-serif; */
 	font-optical-sizing: auto;
 	font-weight: 678;
 	font-style: normal;
 	
   }
-  
-  /* Change the color of links on hover */
+
   .topnav a:hover {
 	background-color: #ddd;
 	color: black;
   }
-  
-  /* Add an active class to highlight the current page */
+
   .topnav a.active {
 	background-color: #26022a;
 	color: white;
   }
   
-  /* Hide the link that should open and close the topnav on small screens */
+
   .topnav .icon {
 	display: none;
   } 
@@ -74,7 +69,6 @@ html::-webkit-scrollbar {
 	text-align: center;
 	font-size: 10vw;
 	color: white;
-	/* font-family: "Montserrat", sans-serif; */
 	font-optical-sizing: auto;
 	font-weight: 678;
 	font-style: normal;
@@ -90,9 +84,9 @@ html::-webkit-scrollbar {
   }
 
   .paragraph img{
-	box-shadow: 0vw 0.5vw 1vw 1vw #441745;
+	box-shadow: 0vw 0.5vw 1vw 1vw #606060;
     margin: 2%;
-	width: 150%;
+	width: 40vw;
 	height: auto;
 	border-radius: 1vw;
 	border-color: whitesmoke;
@@ -108,10 +102,9 @@ html::-webkit-scrollbar {
 }
 
   .paragraph p{
-	font-size: 2vw;
-	padding-top: 6%;
+	font-size: 3vw;
+	padding-top: 3%;
 	color: white;
-	/* font-family: "Montserrat", sans-serif; */
 	font-optical-sizing: auto;
 	font-weight: 678;
 	font-style: normal;
