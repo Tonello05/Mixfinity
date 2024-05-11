@@ -49,35 +49,33 @@
 	$res = $conn->query($sql);
 
 	if ($res->num_rows == 0) {
-	echo "Genres not found in database<br/>";
-	return;
+		echo "Genres not found in database<br/>";
+		return;
 	} else {
-	$genres = $res;
+		$genres = $res;
 	}
 ?>	
 	<header id="header" class="">
 		<div class="toolbar topbar-div">
 			<div>
-				<button class="interactable">File</button>
+				<button id="file" class="interactable dropdown-button">File</button>
 				<div class="dropdown" hidden>
 					<button id="new-editor" class="interactable">New Editor</button>
-					<button id="save" class="interactable">Save</button>
 					<button id="exit" class="interactable">Exit</button>
 				</div>
 			</div>
 			<div>
-				<button class="interactable">Edit</button>
+				<button id="edit" class="interactable dropdown-button">Edit</button>
 				<div class="dropdown" hidden>
-					<button id="new-editor" class="interactable">New Editor</button>
-					<button id="save" class="interactable">Save</button>
-					<button id="exit" class="interactable">Exit</button>
+					<button id="opt1" class="interactable">Option1</button>
+					<button id="opt2" class="interactable">Option2</button>
 				</div>
 			</div>
 		</div>
 		<div class="final-toolbar topbar-div">
-			<button class="interactable">Credits</button>
+			<button id="credits" class="interactable">Credits</button>
 			<button id="publish" class="interactable">Publish</button>
-			<button class="interactable">User</button>
+			<div id="user">Username</div>
 		</div>
 	</header>
 
@@ -142,10 +140,12 @@
 				</div>
 				<div class="bar-right">
 					<!-- Volume -->
-					<a href="">
+					<button id="volume-button" class="interactable">
 						<span class="material-symbols-rounded interactable">volume_up</span>
-					</a>
-					<div class="interactable" id="volume-bar"></div>
+					</button>
+					<div class="interactable" id="volume-bar">
+						<div id="volume"></div>
+					</div>
 					<!-- End volume -->
 				</div>
 			</div>
@@ -162,27 +162,7 @@
 				</div>
 			</div>
 
-			<div id="track-editor-container">
-				<!-- <div class="track-editor">
-					<div class="track-editor-top">
-						<h3 class="interactable">Instrument 1</h3>
-						<button class="edit-track">
-							<span class="material-symbols-rounded interactable">edit</span>
-						</button>
-						<button class="close-track">
-							<span class="material-symbols-rounded interactable">close</span>
-						</button>
-					</div>
-					<div class="track-container">
-						<div class="line-container">
-							<div class="vseparator"></div>
-							<div class="hseparator"></div>
-						</div>
-						<div class="keys-container"></div>
-						<div class="track"></div>
-					</div>
-				</div> -->
-			</div>
+			<div id="track-editor-container"></div>
 		</div>
 	</div>
 
@@ -190,11 +170,13 @@
 		<div class="publish-container">
 			<div class="form-container">
 				<h3>Publish Song</h3>
-				<form name="input" id="publish-form" action="../../php/publishSong.php" method="post">
+				<form name="input" id="publish-form">
 					<div class="input-container">
-						<input type="text" min="3" maxlength="30" placeholder="Song name" name="name" required>
+						<input id="song-title" type="text" min="3" maxlength="30" placeholder="Song title" name="title" required>
+						<input id="song-input" type="text" name="song">
 						<div class="custom-select">
 							<select name="genre" id="select-form">
+								<option selected value=0></option>
 								<?php
 								foreach ($genres as $genre) {
 									$id = $genre["id"];
@@ -229,10 +211,42 @@
 						<div></div>
 						<div id="genre-buttons">
 							<button id="cancel-submit" type="button" class="interactable">Cancel</button>
-							<input id="genre-submit" type="submit" value="Publish">
+							<button id="genre-submit" type="button" class="interactable">Publish</button>
 						</div>
 					</div>
 				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="error-message-container">
+		<div hidden id="error-message" class="error-message">
+			<div class="errror-title">Error</div>
+			<div class="divisor"></div>
+			<div id="error-content"></div>
+		</div>
+	</div>
+
+	<div hidden id="credits-panel">
+		<div class="credits-container">
+			<div class="credits">
+				<div class="top">
+					<h2>Credits</h2>
+					<button id="close-credits" class="close-credits interactable">
+						<span class="material-symbols-rounded">close</span>
+					</button>
+				</div>
+				<h3>Developers</h3>
+				<div class="devs">
+					<div>Front-end, Music editor - Ricatti Luca</div>
+					<div>Back-end, Database - Wu YiJun</div>
+					<div>Font-end, Sound managment - Tonello Samuele</div>
+				</div>
+				<hr>
+				<h3>External Tools</h3>
+				<div class="tools">
+					<div>Tone.js</div>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -1,7 +1,5 @@
 import { SamplerController } from "./samplerController.js"
 
-const synth = new Tone.Synth().toDestination()
-
 const trackModeSelect = document.getElementById("track-mode-select")
 const trackModeAdd = document.getElementById("track-mode-add")
 const trackModeResize = document.getElementById("track-mode-resize")
@@ -9,23 +7,29 @@ const trackModeRemove = document.getElementById("track-mode-remove")
 
 const timeLine = document.getElementById("timeline")
 const tempoBox = document.getElementById("tempo")
+const volumeButton = document.getElementById("volume-button")
+const volumeBar = document.getElementById("volume-bar")
+const volumeLine = document.getElementById("volume")
 
 const trackEditorContainer = document.getElementById("track-editor-container")
 
 // Track variables
 const MIN_TEMPO = 30
 const MAX_TEMPO = 300
+const MIN_VOLUME = -50
+const MAX_VOLUME = 15
 const NOTE_NAMES = ["B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"]
 
-let volume = -19
+const noteHeightPx = 17
+const noteWidthPx = 20
+const noteNumber = 84
+let volume = -10
 let tempo = 120
-let songDuration = 3000 // 1590
-let noteNumber = 84
-let noteHeightPx = 17
-let noteWidthPx = 20
 let trackMode = "track-mode-add"
 let timelineM1Down = false
 let tempoBoxSelected = false
+let volumeM1Down = false
+let songDuration = 300 * (noteWidthPx * 4)
 let timelineX = 0
 
 let instruments = document.querySelectorAll('.instrument');
@@ -40,11 +44,15 @@ let resizePosX = 0
 let noteMoved = false
 
 // Instruments
-let samplers = {"a":"b"}	// key-value array of all instruments and their name
+let samplers = {}	// key-value array of all instruments and their name
 let trackIdCounter = 0		// Incremental value for track IDs
 let song = {"tracks": {}, "tempo": tempo, "duration": songDuration}
 
-let playheadsId
+// Other
+let savedVolume
+let playheadsId // Identifier for playhead animation
+let errorId // Identifier for error message timeout
+let enabledDropdown
 
 function clamp(value, min, max) {
 	return Math.max(Math.min(value, max), min)
@@ -75,12 +83,9 @@ function getNoteSound(yPos) {
 function mouseMovement(event) {
 	let track = event.target
 	let trackEditor = track.parentElement.parentElement
-	if (track.classList.contains("note")) {
-		track = track.parentElement
-	}
 
 	// Check if track is is edit mode
-	if (!track.parentElement.parentElement.classList.contains("edit")) {
+	if (!trackEditor.classList.contains("edit")) {
 		return
 	}
 
@@ -88,7 +93,6 @@ function mouseMovement(event) {
 	let trackHeight= track.clientHeight
 	let divRect = track.getBoundingClientRect()
 
-	// let oldNotePosX = notePosX
 	let oldNotePosY = notePosY
 
 	// Calculate note position
@@ -129,7 +133,7 @@ function mouseMovement(event) {
 		}
 
 		// Play the notes
-		samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), currentNoteWidth + "n")
+		samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), ((60 / tempo) * currentNoteWidth) + "n")
 
 	} else if (trackMode == "track-mode-resize") {
 		let newNoteWidth = Math.max(Number.parseInt(note.getAttribute("noteWidth")) + (notePosX - resizePosX), 1)
@@ -146,7 +150,7 @@ function noteClick(event) {
 	}
 
 	if (trackMode == "track-mode-select") {
-		samplers[trackContainer.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), currentNoteWidth + "n")
+		samplers[trackContainer.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY),  ((60 / tempo) * currentNoteWidth) + "n")
 	} else if (trackMode == "track-mode-remove") {
 		let note = event.target
 		let track = note.parentElement
@@ -154,6 +158,7 @@ function noteClick(event) {
 
 		// Remove note from song data
 		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
+		document.getElementById("song-input").value = JSON.stringify(song)
 
 		track.removeChild(note)
 	}
@@ -168,11 +173,13 @@ function noteMouseDown(event) {
 	if (trackMode == "track-mode-select") {
 		note = event.target
 		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
+		document.getElementById("song-input").value = JSON.stringify(song)
 	} else if (trackMode == "track-mode-resize") {
 		note = event.target
 		currentNoteWidth = note.getAttribute("notewidth")
 		resizePosX = notePosX
 		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
+		document.getElementById("song-input").value = JSON.stringify(song)
 	}
 }
 
@@ -207,8 +214,8 @@ function mouseUp(event) {
 
 	// Add note to song data
 
-	// TODO (((tempo / 60) / 4) * currentNoteWidth) ?
-	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + (((tempo / 60) / 4) * currentNoteWidth) + "," + noteX * (60 / tempo)
+	song.tracks[trackEditor.getAttribute("track-id")].notes[noteX + ";" + noteY] = getNoteSound(noteY) + "," + ((60 / tempo) * currentNoteWidth) + "," + noteX * (60 / tempo)
+	document.getElementById("song-input").value = JSON.stringify(song)
 	note = null;
 }
 
@@ -228,7 +235,7 @@ function trackMouseDown(event) {
 	note = newNote(notePosX, notePosY, currentNoteWidth, track.getAttribute("note-color"))
 
 	// Play the notes
-	samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), currentNoteWidth + "n")
+	samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY), ((60  / tempo) * currentNoteWidth) + "n")
 
 	// Insert note into track
 	track.appendChild(note)
@@ -384,7 +391,7 @@ function newTrackDiv(instrumentName) {
 		let noteName = NOTE_NAMES[noteIndex - 1]
 
 		keyDiv.addEventListener("click", (event) => {
-			samplers[trackIdCounter].triggerAttackRelease(noteName + event.target.getAttribute("pitch"), "4n")
+			samplers[trackEditor.getAttribute("track-id")].triggerAttackRelease(noteName + event.target.getAttribute("pitch"), "4n")
 		})
 
 		if (noteName == "C") {
@@ -467,10 +474,72 @@ function tempoChanged() {
 	// TODO: fix bpm not changing after sampler are created
 }
 
+function volumeChanged(event) {
+	if (!volumeM1Down) {
+		return
+	}
+
+	let volumeIcon = volumeButton.querySelector("span")
+	if (volumeIcon.innerText == "volume_off") {
+		volumeIcon.innerText = "volume_up"
+	}
+
+	let divRect = volumeBar.getBoundingClientRect()
+	let volumeX = clamp(event.clientX - divRect.left, 0, volumeBar.clientWidth)
+	let percentage = (volumeX / volumeBar.clientWidth) * 100
+
+	volume = MIN_VOLUME + ((percentage / 100) * (MAX_VOLUME - MIN_VOLUME))
+	volumeLine.style.width = percentage + "%"
+
+	for (const id in samplers) {
+		samplers[id].volume.value = volume
+	}
+}
+
+function volumeScroll(event) {
+	let scroll = event.wheelDeltaY
+
+	let volumeIcon = volumeButton.querySelector("span")
+	if (volumeIcon.innerText == "volume_off") {
+		volumeIcon.innerText = "volume_up"
+	}
+
+	if (scroll > 0) {
+		volume = clamp(volume + 5, MIN_VOLUME, MAX_VOLUME)
+	} else {
+		volume = clamp(volume - 5, MIN_VOLUME, MAX_VOLUME)
+	}
+
+	volumeLine.style.width = ((volume - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME)) * 100 + "%"
+	for (const id in samplers) {
+		samplers[id].volume.value = volume
+	}
+}
+
+function toggleMute() {
+	let volumeIcon = volumeButton.querySelector("span")
+
+	if (volumeIcon.innerText == "volume_up") {
+		volumeIcon.innerText = "volume_off"
+		savedVolume = volume
+		volume = MIN_VOLUME
+		volumeLine.style.width = 0
+	} else {
+		volumeIcon.innerText = "volume_up"
+		volume = savedVolume
+		volumeLine.style.width = ((volume - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME)) * 100 + "%"
+	}
+
+	for (const id in samplers) {
+		samplers[id].volume.value = volume
+	}
+}
+
 function timelineToStart() {
 	pauseSong()
 
 	timelineX = 0
+	timeLine.scrollLeft = timelineX
 	playheads.forEach(playhead => {
 		playhead.style.transform = "translateX(" + timelineX + "px"
 	});
@@ -480,6 +549,7 @@ function timelineToEnd() {
 	pauseSong()
 
 	timelineX = timeLine.scrollWidth
+	timeLine.scrollLeft = timelineX
 	playheads.forEach(playhead => {
 		playhead.style.transform = "translateX(" + timelineX + "px"
 	});
@@ -520,7 +590,7 @@ function onKeyPress(event) {
 }
 
 function animatePlayheads() {
-	let seconds = ((60 / tempo) * 4)
+	let seconds = 60 / tempo
 	let pos = new WebKitCSSMatrix(window.getComputedStyle(playheads[0]).transform).m41
 	let gridPos = Math.round(clamp(pos / noteWidthPx, 0, (songDuration / currentNoteWidth)))
 
@@ -528,7 +598,7 @@ function animatePlayheads() {
 	playheads.forEach(playhead => {
 		let newPos = gridPos * noteWidthPx
 		playhead.style.transition = "transform " + seconds + "s linear 0s"
-		playhead.style.transform = "translateX(" + (newPos + (noteWidthPx * 4)) + "px"
+		playhead.style.transform = "translateX(" + (newPos + (noteWidthPx)) + "px"
 	});
 }
 
@@ -538,8 +608,8 @@ function playSong() {
 	}
 
 	animatePlayheads()
-	SamplerController.playSong(song, samplers, /* Playhead position*/)
-	playheadsId = setInterval(animatePlayheads, 500)
+	SamplerController.playSong(song, samplers, timelineX, noteWidthPx, tempo)
+	playheadsId = setInterval(animatePlayheads, (60 / tempo) * 1000)
 }
 
 function pauseSong() {
@@ -558,7 +628,9 @@ function stopSong() {
 	timelineToStart()
 }
 
+volumeLine.style.width = ((volume - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME)) * 100 + "%"
 Tone.getTransport().bpm.value = tempo
+tempoBox.value = tempo
 
 instruments.forEach(instrument => {
 	instrument.addEventListener("click", createTrack)
@@ -585,10 +657,141 @@ for (let i = 0; i < songDuration / noteWidthPx; i++) {
 	timeLine.appendChild(vSeparator)
 }
 
+function toggleDropdown(event) {
+	let button = event.target
+	let dropdown = button.parentElement.querySelector("div")
+
+	if (enabledDropdown != null) {
+		enabledDropdown.hidden = true
+		enabledDropdown = null
+	}
+
+	dropdown.hidden = !dropdown.hidden
+	if (!dropdown.hidden) {
+		enabledDropdown = dropdown
+	} else {
+		enabledDropdown = null
+	}
+}
+
+function closeDropdown(event) {
+	if (enabledDropdown == null) {
+		return
+	}
+
+	if (event.target.classList.contains("dropdown-button")) {
+		return
+	}
+
+	enabledDropdown.hidden = true
+	enabledDropdown = null
+}
+
+function showError(message, showTime) {
+	const errorMessage = document.getElementById("error-message")
+
+	if (errorId != null) {
+		clearTimeout(errorId)
+	}
+
+	errorId = setTimeout(() => {errorMessage.hidden = true}, showTime * 1000);
+
+	errorMessage.querySelector("#error-content").innerText = message
+	errorMessage.hidden = false
+}
+
+// Publish song without leaving editor page
+function publishSong() {
+	const xhr = new XMLHttpRequest()
+	xhr.open("POST", "../../php/publishSong.php")
+	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+	xhr.onload = function () {
+		if (xhr.status === 200) {
+			// If request is successfull move to user page
+			location.href = "../user/"
+		} else {
+			console.error('Error while saving song:', xhr.statusText);
+		}
+	}
+
+	const title = document.getElementById("song-title").value
+	const genreId = document.getElementById("select-form").value
+	const songData = document.getElementById("song-input").value
+
+	if (title == "") {
+		showError("You must set a title to publish a song.", 4)
+		return
+	}
+
+	if (genreId == 0) {
+		showError("You must set a genre to publish a song.", 4)
+		return
+	}
+
+	if (document.querySelectorAll(".note").length == 0) {
+		showError("A song must at least have one track with one note.", 4)
+		return
+	}
+
+	const formData = `title=${title}&genre=${genreId}&songData=${songData}`;
+
+	xhr.send(formData)
+}
+
+function toggleCredits() {
+	const creditsPanel = document.getElementById("credits-panel")
+
+	creditsPanel.hidden = !creditsPanel.hidden
+	if (!creditsPanel.hidden) {
+		header.classList.add("blurred")
+		container.classList.add("blurred")
+	} else {
+		header.classList.remove("blurred")
+		container.classList.remove("blurred")
+	}
+}
+
+tempoBox.addEventListener("change", tempoChanged)
+tempoBox.addEventListener("focusin", () => {tempoBoxSelected = true})
+tempoBox.addEventListener("focusout", () => {tempoBoxSelected = false})
+
+timeLine.addEventListener("scroll", timelineScroll)
+timeLine.addEventListener("mousedown", () => {timelineM1Down = true})
+timeLine.addEventListener("mouseup", (event) => {timeLineMouseMove(event); timelineM1Down = false})
+timeLine.addEventListener("mousemove", timeLineMouseMove)
+
+volumeBar.addEventListener("mouseup", () => {volumeM1Down = false; volumeChanged})
+volumeBar.addEventListener("mousedown", () => volumeM1Down = true)
+volumeButton.addEventListener("click", toggleMute)
+volumeBar.addEventListener("mousemove", volumeChanged)
+volumeBar.addEventListener("wheel", volumeScroll)
+
+trackModeSelect.addEventListener("click", changeTrackMode)
+trackModeAdd.addEventListener("click", changeTrackMode)
+trackModeResize.addEventListener("click", changeTrackMode)
+trackModeRemove.addEventListener("click", changeTrackMode)
+
+document.getElementById("toStart").addEventListener("click", timelineToStart)
+document.getElementById("play").addEventListener("click", playSong)
+document.getElementById("pause").addEventListener("click", pauseSong)
+document.getElementById("stop").addEventListener("click", stopSong)
+document.getElementById("toEnd").addEventListener("click", timelineToEnd)
+
+document.addEventListener("click", closeDropdown)
+document.getElementById("file").addEventListener("click", toggleDropdown)
+document.getElementById("edit").addEventListener("click", toggleDropdown)
+
+document.getElementById("new-editor").addEventListener("click", () => {location.href = "./"})
+document.getElementById("exit").addEventListener("click", () => {location.href = "../user/"})
+
+document.getElementById("genre-submit").addEventListener("click", publishSong)
+document.getElementById("credits").addEventListener("click", toggleCredits)
+document.getElementById("close-credits").addEventListener("click", toggleCredits)
+
+document.addEventListener("keypress", onKeyPress)
+
 export var SongLoader = {
 	loadSong: function(songJson) {
-		console.log(songJson);
-
 		tempo = songJson.tempo
 		songDuration = songJson.duration
 		tempoBox.value = tempo
@@ -625,7 +828,8 @@ export var SongLoader = {
 				songNote.style.pointerEvents = "all"
 
 				// Add note to song data
-				song.tracks[trackEditor.getAttribute("track-id")].notes[notePos[0] + ";" + notePos[1]] = getNoteSound(notePos[1]) + "," + (noteWidth) + "," + notePos[0] * (60 / tempo)
+				song.tracks[trackEditor.getAttribute("track-id")].notes[notePos[0] + ";" + notePos[1]] = getNoteSound(notePos[1]) + "," + ((60 / tempo) * noteWidth) + "," + notePos[0] * (60 / tempo)
+				document.getElementById("song-input").value = JSON.stringify(song)
 
 				// Insert note into track
 				track.appendChild(songNote)
@@ -633,25 +837,3 @@ export var SongLoader = {
 		}
 	}
 }
-
-tempoBox.addEventListener("change", tempoChanged)
-tempoBox.addEventListener("focusin", () => {tempoBoxSelected = true})
-tempoBox.addEventListener("focusout", () => {tempoBoxSelected = false})
-
-timeLine.addEventListener("scroll", timelineScroll)
-timeLine.addEventListener("mousedown", () => {timelineM1Down = true})
-timeLine.addEventListener("mouseup", (event) => {timeLineMouseMove(event); timelineM1Down = false})
-timeLine.addEventListener("mousemove", timeLineMouseMove)
-
-trackModeSelect.addEventListener("click", changeTrackMode)
-trackModeAdd.addEventListener("click", changeTrackMode)
-trackModeResize.addEventListener("click", changeTrackMode)
-trackModeRemove.addEventListener("click", changeTrackMode)
-
-document.getElementById("toStart").addEventListener("click", timelineToStart)
-document.getElementById("play").addEventListener("click", playSong)
-document.getElementById("pause").addEventListener("click", pauseSong)
-document.getElementById("stop").addEventListener("click", stopSong)
-document.getElementById("toEnd").addEventListener("click", timelineToEnd)
-
-document.addEventListener("keypress", onKeyPress)

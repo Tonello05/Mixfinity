@@ -13,29 +13,30 @@ export var SamplerController = {
 
 		const sampler = new Tone.Sampler({
 			urls: sounds,
-			release: 1,
+			release: .5,
 			baseUrl: samplesFolderUrl
 		}).toDestination()
 
 		return sampler
 	},
 
-	playSong: function (songJson, samplers, playheadPosition) {
+	playSong: function (songJson, samplers, playheadPosition, noteWidthPx, bpm) {
+		let timelineStart = (playheadPosition / noteWidthPx) * (60 / bpm)
+
 		for (const trackId in songJson.tracks) {
 			let sampler = samplers[trackId]
 			let notes = songJson.tracks[trackId].notes
 
 			for (const notePos in notes) {
 				let noteData = notes[notePos].split(",")
-				sampler.triggerAttackRelease(noteData[0], noteData[1], ("+" + noteData[2]))
+				sampler.triggerAttackRelease(noteData[0], noteData[1], ("+" + (noteData[2] - timelineStart)))
 			}
 		}
 	},
 
 	stop: function (samplers) {
-		// for (const samplerId in samplers) {
-		// 	console.log(samplers[samplerId])
-		// 	samplers[samplerId].releaseAll()
-		// }
+		for (const samplerId in samplers) {
+			samplers[samplerId].releaseAll("+0")
+		}
 	}
 }

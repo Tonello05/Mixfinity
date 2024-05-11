@@ -46,7 +46,7 @@ function selectGenre(event) {
 	toggleGenreSelect()
 }
 
-function togglePublishPannel(params) {
+function togglePublishPannel() {
 	if (!publishPanelEnabled) {
 		header.classList.add("blurred")
 		container.classList.add("blurred")

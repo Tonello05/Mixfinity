@@ -7,6 +7,7 @@
 	text-decoration: 0;
 	box-sizing: border-box;
 	color: rgb(200, 200, 200);
+	font-family: 'Ubuntu', sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -45,10 +46,7 @@ button span {
 }
 
 body {
-	/* background-image: url("../img/background.png");
-	background-repeat: repeat; */
 	background-color: rgb(30, 30, 30);
-	font-family: 'Ubuntu', sans-serif;
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
@@ -73,10 +71,20 @@ header .topbar-div {
 	align-items: center;
 }
 
+header #user,
 header button {
 	padding: 0 15px 0 15px;
 	width: fit-content;
 	font-size: 16px;
+	border-radius: 15px;
+}
+
+header #user {
+	user-select: none;
+}
+
+header button:hover {
+	background-color: rgb(100, 100, 100);
 }
 
 .dropdown {
@@ -95,8 +103,9 @@ header button {
 	text-align: left;
 	font-size: 14px;
 	width: 100%;
-	/* margin-bottom: 5px; */
 	margin: 5px 0 5px 0;
+	border-radius: 10px;
+	padding-left: 3px;
 	z-index: 3;
 }
 
@@ -197,9 +206,18 @@ aside .instrument-bar div {
 }
 
 #volume-bar {
+	display: flex;
+	align-items: center;
+	padding: 0;
+	height: 15px;
+	width: 65%;
+}
+
+#volume-bar div {
 	background-color: rgb(200, 200, 200);
-	height: 3px;
-	width: 60%;
+	padding: 0;
+	width: 100%;
+	height: 2px;
 	border-radius: 15px;
 }
 
@@ -448,7 +466,21 @@ aside .instrument-bar div {
 	z-index: -1;
 }
 
-/* Custom select */
+#song-input {
+	position: absolute;
+	display: none;
+}
+
+#genre-submit {
+	text-align: center;
+	background-color: rgb(30, 30, 30);
+	width: 80px;
+	height: 22px;
+	margin: 0 0 0 10px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
 .custom-select {
 	width: 100%;
 	height: 30px;;
@@ -511,4 +543,89 @@ aside .instrument-bar div {
 .scroll-container .selected,
 .genre-item:hover {
 	background-color: rgb(75, 75, 75);
+}
+
+.error-message-container {
+	position: absolute;
+	top: 0;
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	pointer-events: none;
+}
+
+.error-message {
+	width: 300px;
+	height: fit-content;
+	margin-top: 15px;
+	background-color: rgb(30, 30, 30);
+	border: 1px solid rgb(200, 0, 0);
+	border-radius: 15px;
+	padding: 5px;
+}
+
+.error-message .divisor {
+	position: relative;
+	width: 100%;
+	height: 1px;
+	margin: 5px 0 5px 0;
+	background-color: rgb(100, 100, 100);
+}
+
+.errror-title {
+	text-align: center;
+	font-size: 20px;
+	width: 100%;
+}
+
+#error-content {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.credits-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	position: absolute;
+	top: 0;
+	background-color: rgb(0, 0, 0, .15);
+	height: 100%;
+	width: 100%;
+	z-index: 10;
+}
+
+.credits {
+	width: 400px;
+	height: auto;
+	background-color: rgb(20, 20, 20);
+	border-radius: 15px;
+	padding: 20px;
+}
+
+.credits h3 {
+	font-size: 1rem;
+	margin-bottom: 8px;
+}
+
+.credits hr {
+	margin: 5px 0 5px 0;
+}
+
+.credits .top {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.credits .top button {
+	height: 24px;
+}
+
+.devs div {
+	padding-top: 2px;
+	padding-bottom: 2px;
 }
