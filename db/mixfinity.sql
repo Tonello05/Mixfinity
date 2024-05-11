@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 10, 2024 at 06:35 PM
+-- Generation Time: May 11, 2024 at 09:01 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -136,20 +136,12 @@ CREATE TABLE `music` (
   `id` int(11) NOT NULL,
   `title` varchar(50) NOT NULL,
   `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`data`)),
-  `duration` int(3) NOT NULL,
   `release_date` date NOT NULL DEFAULT current_timestamp(),
-  `rating` decimal(3,1) NOT NULL,
+  `rating` decimal(3,1) NOT NULL DEFAULT 0.0,
   `id_user` int(11) NOT NULL,
   `id_genre` int(11) NOT NULL,
   `id_music_remix` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `music`
---
-
-INSERT INTO `music` (`id`, `title`, `data`, `duration`, `release_date`, `rating`, `id_user`, `id_genre`, `id_music_remix`) VALUES
-(1, 'Canzone del puzzo', '\r\n      {\r\n       	\"tracks\": {\r\n            \"2\": {\r\n                \"instrument\": \"piano\",\r\n                \"notes\": {\r\n                    \"1;1\": \"A1,1n,+0\",\r\n                    \"2;2\": \"A#1,2n,+.25\",\r\n                    \"3;3\": \"A3,10n,+.5\"\r\n                }\r\n            }\r\n        },\r\n        \"tempo\": 120,\r\n        \"duration\": 3000\r\n      }', 3000, '2024-05-10', 10.0, 1, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -169,7 +161,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`) VALUES
-(1, 'Admin', 'admin@mixfinity.it', '10c4981bb793e1698a83aea43030a388');
+(1, 'Admin', 'admin@mixfinity.it', '10c4981bb793e1698a83aea43030a388'),
+(3, '', '', 'd41d8cd98f00b204e9800998ecf8427e');
 
 --
 -- Indexes for dumped tables
@@ -225,13 +218,13 @@ ALTER TABLE `instruments`
 -- AUTO_INCREMENT for table `music`
 --
 ALTER TABLE `music`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
