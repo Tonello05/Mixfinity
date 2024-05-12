@@ -6,7 +6,7 @@ $username = ucfirst(strtolower($_POST["username"]));
 $email = strtolower($_POST["email"]);
 $password = md5($_POST["password"]);
 if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
-	header("Location: member.php");
+	header("Location: ../src/user");
 	return;
 }
 if(isset($username) && isset($email) && isset($password)){
@@ -21,7 +21,7 @@ if(isset($username) && isset($email) && isset($password)){
 		if($conn->query($sql) === TRUE){
 			header("location: ../src/login/");
 		}else{
-			hheader("location: ../src/login/");
+			header("location: ../src/login/");
 		}
 	}
 	$conn->close();

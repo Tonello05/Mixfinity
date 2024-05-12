@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 12, 2024 at 06:58 PM
+-- Generation Time: May 13, 2024 at 12:06 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -155,6 +155,27 @@ INSERT INTO `music` (`id`, `title`, `data`, `release_date`, `rating`, `id_user`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `updates`
+--
+
+CREATE TABLE `updates` (
+  `id` int(11) NOT NULL,
+  `title` varchar(50) NOT NULL,
+  `text` text NOT NULL,
+  `date` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `updates`
+--
+
+INSERT INTO `updates` (`id`, `title`, `text`, `date`) VALUES
+(1, 'New Instruments', 'New instruments have been added, allowing you to create new and more profesional music. Instruments added: Bass electric, Bassoon, Cello, Clarinet, Contrabass, Flute, French horn, Guitar acoustic, Guitar electric, Guitar nylon, Harmonium, Harp, Organ, Piano, Saxophone, Trombone, Trumpet, Tuba, Violin, Xylophone.', '2024-05-10'),
+(2, 'Released!', 'MIxfinity has now been released and can be enjoyed be anyone, anywhere they want and anytime', '2024-05-12');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -170,8 +191,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`) VALUES
-(1, 'Admin', 'admin@mixfinity.it', '10c4981bb793e1698a83aea43030a388'),
-(3, '', '', 'd41d8cd98f00b204e9800998ecf8427e');
+(1, 'Admin', 'admin@mixfinity.it', '10c4981bb793e1698a83aea43030a388');
 
 --
 -- Indexes for dumped tables
@@ -201,6 +221,12 @@ ALTER TABLE `music`
   ADD KEY `id_user` (`id_user`) USING BTREE;
 
 --
+-- Indexes for table `updates`
+--
+ALTER TABLE `updates`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -227,13 +253,19 @@ ALTER TABLE `instruments`
 -- AUTO_INCREMENT for table `music`
 --
 ALTER TABLE `music`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `updates`
+--
+ALTER TABLE `updates`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables

@@ -11,7 +11,6 @@
 </head>
 <body>
 <?php
-	require "../../php/import/connect.php";
 	session_start();
 
 	if(!isset($_SESSION['logged']) OR $_SESSION['logged'] !== true){

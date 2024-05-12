@@ -466,6 +466,8 @@ aside .instrument-bar div {
 	z-index: -1;
 }
 
+#user-id,
+#remix-input,
 #song-input {
 	position: absolute;
 	display: none;

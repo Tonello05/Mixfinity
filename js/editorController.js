@@ -20,7 +20,7 @@ const MIN_VOLUME = -50
 const MAX_VOLUME = 15
 const NOTE_NAMES = ["B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"]
 
-const volumeCookie = clamp(document.cookie.split("volume=")[1], MAX_VOLUME, MIN_VOLUME)
+const volumeCookie = document.cookie.split("volume=")[1].split(";")[0]
 
 const noteHeightPx = 17
 const noteWidthPx = 20
@@ -721,15 +721,22 @@ function publishSong() {
 	xhr.onload = function () {
 		if (xhr.status === 200) {
 			// If request is successfull move to user page
-			location.href = "../user/"
+			let response = xhr.responseText
+			if (response == "<br/>music added!") {
+				location.href = "../user/"
+			} else {
+				showError("Issue while saving song to database.", 4)
+				console.log(response);
+			}
 		} else {
-			console.error('Error while saving song:', xhr.statusText);
+			console.error('Issue with server connection:', xhr.statusText);
 		}
 	}
 
 	const title = document.getElementById("song-title").value
 	const genreId = document.getElementById("select-form").value
 	const songData = document.getElementById("song-input").value
+	const remixId = document.getElementById("remix-input").value
 
 	if (title == "") {
 		showError("You must set a title to publish a song.", 4)
@@ -746,7 +753,7 @@ function publishSong() {
 		return
 	}
 
-	const formData = `title=${title}&genre=${genreId}&songData=${songData}`;
+	const formData = `title=${title}&genre=${genreId}&songData=${songData}&remixId=${remixId}`;
 	xhr.send(formData)
 }
 
@@ -791,10 +798,10 @@ document.getElementById("toEnd").addEventListener("click", timelineToEnd)
 
 document.addEventListener("click", closeDropdown)
 document.getElementById("file").addEventListener("click", toggleDropdown)
-document.getElementById("edit").addEventListener("click", toggleDropdown)
+// document.getElementById("edit").addEventListener("click", toggleDropdown)
 
 document.getElementById("new-editor").addEventListener("click", () => {location.href = "./"})
-document.getElementById("exit").addEventListener("click", () => {location.href = "../../php/member.php"})
+document.getElementById("exit").addEventListener("click", () => {location.href = "../user/"})
 
 document.getElementById("genre-submit").addEventListener("click", publishSong)
 document.getElementById("credits").addEventListener("click", toggleCredits)

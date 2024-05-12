@@ -14,7 +14,6 @@
 </head>
 <body>
 <?php
-	// Page link ../?id_song=songId
 	require "../../php/import/connect.php";
 	session_start();
 	if(!isset($_SESSION['logged']) OR $_SESSION['logged'] !== true){
@@ -68,13 +67,13 @@
 					<button id="exit" class="interactable">Exit</button>
 				</div>
 			</div>
-			<div>
+			<!-- <div>
 				<button id="edit" class="interactable dropdown-button">Edit</button>
 				<div class="dropdown" hidden>
 					<button id="opt1" class="interactable">Option1</button>
 					<button id="opt2" class="interactable">Option2</button>
 				</div>
-			</div>
+			</div> -->
 		</div>
 		<div class="final-toolbar topbar-div">
 			<button id="credits" class="interactable">Credits</button>
@@ -177,6 +176,7 @@
 				<form name="input" id="publish-form">
 					<div class="input-container">
 						<input id="song-title" type="text" min="3" maxlength="30" placeholder="Song title" name="title" required>
+						<input id="remix-input" type="text" name="remix-id">
 						<input id="song-input" type="text" name="song">
 						<div class="custom-select">
 							<select name="genre" id="select-form">
@@ -263,6 +263,8 @@
 	if (!empty($songJson)) {
 ?>
 <script type="module">
+	document.getElementById("remix-input").value="<?php echo $_GET['id_song'];?>"
+
 	import { SongLoader } from "../../js/editorController.js";
 
 	var data = <?php echo $songJson;?>;

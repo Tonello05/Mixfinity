@@ -10,6 +10,14 @@
 	<title>Mixfinity</title>
 </head>
 <body>
+	<?php
+	session_start();
+
+	if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
+		header("location: ../user/");
+		return;
+	}
+	?>
 	<div class="container">
 		<h1>MIxfinity</h1>
 		<div class="form-container">

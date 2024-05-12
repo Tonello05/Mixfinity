@@ -2,7 +2,6 @@ const searchBar = document.getElementById("search-bar")
 const sortsContainer = document.getElementById("sorts-container")
 const songContainer = document.getElementById("scroll-container")
 
-const remixButtons = document.querySelectorAll(".remix-button")
 let songs = document.querySelectorAll(".song")
 
 function fillSongContainer(jsonSongs) {
@@ -109,13 +108,15 @@ function fillSongContainer(jsonSongs) {
 		}
 
 		topDiv.appendChild(ratingContainerDiv)
-		
+
 		buttonsDiv.classList.add("buttons")
 		playButton.classList.add("interactable", "play-button")
 		playButton.innerText = "Play"
 		remixButton.classList.add("remix-button", "interactable")
-		remixButton.setAttribute("song-id", jsonSongs.id)
 		remixButton.innerText = "Remix"
+		remixButton.addEventListener("click", () => {
+			location.href = "../editor/?id_song=" + song.id
+		})
 
 		buttonsDiv.appendChild(playButton)
 		buttonsDiv.appendChild(remixButton)
@@ -129,6 +130,7 @@ function fillSongContainer(jsonSongs) {
 	}
 
 	songs = document.querySelectorAll(".song")
+	remixButtons = document.querySelectorAll(".remix-button")
 }
 
 function changeSort(sortType, button) {
@@ -140,6 +142,7 @@ function changeSort(sortType, button) {
 			let jsonData
 			try {
 				jsonData = JSON.parse(xhr.responseText)
+				console.log(jsonData);
 			} catch (error) {
 				console.log("Sort error: " + error);
 				return
@@ -174,12 +177,6 @@ searchBar.addEventListener("input", () => {
 		}
 	});
 })
-
-remixButtons.forEach(button => {
-	button.addEventListener("click", () => {
-		location.href = "../editor/?id_song=" + button.getAttribute("song-id")
-	})
-});
 
 sortsContainer.querySelectorAll("button").forEach(button => {
 	button.addEventListener("click", () => {
