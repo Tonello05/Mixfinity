@@ -1,29 +1,31 @@
 <?php
 require "./import/connect.php";
+session_start();
 
 $username = ucfirst(strtolower($_POST["username"]));
 $email = strtolower($_POST["email"]);
 $password = md5($_POST["password"]);
-
+if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
+	header("Location: member.php");
+	return;
+}
 if(isset($username) && isset($email) && isset($password)){
 	$sql = "SELECT * FROM users WHERE email ='$email' AND password = '$password'";
 	$res = $conn->query($sql);
 
 	if($res->num_rows > 0){
-		echo "This user already exist!";
+		header("location: ../src/login/");
 	}else{
 		$sql = "INSERT INTO users(username, email, password) VALUES ('$username','$email','$password')";
 		
 		if($conn->query($sql) === TRUE){
-			echo "User registered successfully!";
-			sleep(3);
-			header("Location: login.html");
+			header("location: ../src/login/");
 		}else{
-			echo "An Error has occurred!";
+			hheader("location: ../src/login/");
 		}
 	}
 	$conn->close();
 }else{
-	echo "An error has occurred!";
+	header("location: ../src/register/");
 }
 ?>

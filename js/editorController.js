@@ -20,7 +20,7 @@ const MIN_VOLUME = -50
 const MAX_VOLUME = 15
 const NOTE_NAMES = ["B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"]
 
-const volumeCookie = document.cookie.split("volume=")[1]
+const volumeCookie = clamp(document.cookie.split("volume=")[1], MAX_VOLUME, MIN_VOLUME)
 
 const noteHeightPx = 17
 const noteWidthPx = 20
@@ -57,7 +57,10 @@ let errorId // Identifier for error message timeout
 let enabledDropdown
 
 function clamp(value, min, max) {
-	return Math.max(Math.min(value, max), min)
+    if (value == null) {
+        return
+    }
+    return Math.max(Math.min(value, max), min)
 }
 
 function getNoteSound(yPos) {
@@ -792,7 +795,7 @@ document.getElementById("file").addEventListener("click", toggleDropdown)
 document.getElementById("edit").addEventListener("click", toggleDropdown)
 
 document.getElementById("new-editor").addEventListener("click", () => {location.href = "./"})
-document.getElementById("exit").addEventListener("click", () => {location.href = "../user/"})
+document.getElementById("exit").addEventListener("click", () => {location.href = "../../php/member.php"})
 
 document.getElementById("genre-submit").addEventListener("click", publishSong)
 document.getElementById("credits").addEventListener("click", toggleCredits)

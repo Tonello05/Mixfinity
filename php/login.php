@@ -1,10 +1,13 @@
 <?php
-session_start();
 require "./import/connect.php";
+session_start();
 
 $email = strtolower($_POST['email']);
 $password = md5($_POST['password']);
-
+if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
+	header("Location: member.php");
+	return;
+}
 if(isset($email) && isset($password)){
 	$sql = "SELECT * FROM users
 		WHERE email = '$email' AND password = '$password'";
@@ -17,9 +20,9 @@ if(isset($email) && isset($password)){
 		$_SESSION['username'] = $row['username'];
 		header("Location: member.php");
 	}else{
-		echo "This user doesn't exist!";
+		header("location: ../src/login");
 	}
 }else{
-	echo "An error has occurred!";
+	header("location: ../src/login");
 }
 ?>
