@@ -57,6 +57,9 @@ let errorId // Identifier for error message timeout
 let enabledDropdown
 
 function clamp(value, min, max) {
+	if (value == null) {
+		return
+	}
 	return Math.max(Math.min(value, max), min)
 }
 
@@ -744,7 +747,6 @@ function publishSong() {
 	}
 
 	const formData = `title=${title}&genre=${genreId}&songData=${songData}`;
-
 	xhr.send(formData)
 }
 

@@ -267,5 +267,6 @@
 </script>
 <?php
 	}
+$conn->close();
 ?>
 </html>

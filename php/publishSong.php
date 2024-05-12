@@ -14,4 +14,5 @@ if($conn->query($sql) === TRUE){
 	echo "<br/>An Error has occurred!";
 }
 
+$conn->close()
 ?>

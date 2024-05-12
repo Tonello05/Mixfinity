@@ -22,4 +22,5 @@ if(isset($email) && isset($password)){
 }else{
 	echo "An error has occurred!";
 }
+$conn->close();
 ?>

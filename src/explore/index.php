@@ -10,73 +10,46 @@
 	<title>Mixfinity</title>
 </head>
 <body>
+<?php
+	require "../../php/import/connect.php";
+	session_start();
+
+	if(!isset($_SESSION['logged']) OR $_SESSION['logged'] !== true){
+		header("location: ../login");
+	}
+?>
 	<div class="header">
 		<img src="../../img/logo_long_transparent.png" alt="">
-		<div class="user-container">
-			Username
+		<div id="user-button" class="user-container interactable">
+			<?php echo $_SESSION['username']?> 
 		</div>
 	</div>
 	<div class="container">
 		<div class="search-bar-container">
 			<div class="search-bar">
 				<span class="material-symbols-rounded">search</span>
-				<input type="text" placeholder="Search for a song.">
+				<input id="search-bar" type="text" placeholder="Search for a song.">
 			</div>
-			<div class="sorts-container">
-				<button>
+			<div id="sorts-container" class="sorts-container">
+				<button sort-type="rating" class="interactable">
 					<span class="material-symbols-rounded">star</span>
 				</button>
-				<button class="selected">
+				<button sort-type="title" class="interactable">
 					<span class="material-symbols-rounded">title</span>
 				</button>
-				<button>
+				<button sort-type="release_date" class="interactable selected">
+					<span class="material-symbols-rounded">calendar_month</span>
+				</button>
+				<button sort-type="username" class="interactable">
 					<span class="material-symbols-rounded">person</span>
 				</button>
 			</div>
 		</div>
 		<div class="song-container">
-			<div class="scroll-container">
-				<div class="song">
-					<div class="left">
-						<div class="title">
-							<h3>Title: </h3>Titolo
-						</div>
-						<div class="author">
-							<h3>Author: </h3>Autore
-						</div>
-						<div class="tempo">
-							<h3>Tempo: </h3>130bpm
-						</div>
-					</div>
-					<div class="right">
-						<div class="mix">
-							<h3>Remix of: </h3>Song name
-						</div>
-						<div class="rating-container">
-							<button>
-								<span class="material-symbols-rounded">star</span>
-							</button>
-							<button>
-								<span class="material-symbols-rounded">star</span>
-							</button>
-							<button>
-								<span class="material-symbols-rounded">star</span>
-							</button>
-							<button>
-								<span class="material-symbols-rounded invalid">star</span>
-							</button>
-							<button>
-								<span class="material-symbols-rounded invalid">star</span>
-							</button>
-						</div>
-						<div class="buttons">
-							<button id="play">Play</button>
-							<button id="remix">Remix</button>
-						</div>
-					</div>
-				</div>
+			<div id="scroll-container" class="scroll-container">
 			</div>
 		</div>
 	</div>
 </body>
+<script src="../../js/explore.js"></script>
 </html>
