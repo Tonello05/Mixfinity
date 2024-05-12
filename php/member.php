@@ -1,6 +1,6 @@
 <?php
-session_start();
 require "./import/connect.php";
+session_start();
 
 if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 	$email = $_SESSION['email'];
@@ -32,8 +32,7 @@ if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 					<img src='../img/logo_long_transparent.png' alt='' srcset=''>
 				</div>
 				<div class='login-container'>
-					<a href='' ><?php $_SESSION['username'] ?></a><br>
-					<a href='logout.php' >Logout</a>
+					<a href='logout.php'>Logout</a>
 				</div>
 			</div>
 			<div class='main'>
@@ -73,6 +72,13 @@ if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 		echo "non hai ancora creato nessuna canzone";
 		echo "<form action='../src/editor/index.php'>".
 			"<input type='submit' value='Crea ora!'></form>";
+			/*
+			
+			
+			DA SISTEMARE IL BOTTONE
+
+
+			*/
 	}
 ?>
 						</div>
@@ -102,8 +108,6 @@ if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 	}
 
 ?>
-						<!--HERE the code to display all the songs -->
-
 						</div>
 					</div>
 				</div>
@@ -116,7 +120,6 @@ if(isset($_SESSION['logged']) AND $_SESSION['logged'] === true){
 	</html>
 <?php
 }else{
-	echo "Session expired";
-	//header("location: ../login.html");
+	header("location: ../src");
 }
 ?>

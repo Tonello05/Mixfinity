@@ -16,7 +16,10 @@
 <?php
 	// Page link ../?id_song=songId
 	require "../../php/import/connect.php";
-
+	session_start();
+	if(!isset($_SESSION['logged']) OR $_SESSION['logged'] !== true){
+		header("location: ../login");
+	}
 	if(isset($_GET['id_song'])){
 		$id_song = $_GET["id_song"];
 		$sql = "SELECT data FROM music WHERE id = $id_song";
@@ -76,7 +79,7 @@
 		<div class="final-toolbar topbar-div">
 			<button id="credits" class="interactable">Credits</button>
 			<button id="publish" class="interactable">Publish</button>
-			<div id="user">Username</div>
+			<div id="user"><?php echo $_SESSION['username']; ?></div>
 		</div>
 	</header>
 
