@@ -20,10 +20,12 @@ const MIN_VOLUME = -50
 const MAX_VOLUME = 15
 const NOTE_NAMES = ["B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"]
 
+const volumeCookie = document.cookie.split("volume=")[1]
+
 const noteHeightPx = 17
 const noteWidthPx = 20
 const noteNumber = 84
-let volume = -10
+let volume = volumeCookie || -10
 let tempo = 120
 let trackMode = "track-mode-add"
 let timelineM1Down = false
@@ -82,8 +84,11 @@ function getNoteSound(yPos) {
 
 function mouseMovement(event) {
 	let track = event.target
-	let trackEditor = track.parentElement.parentElement
+	if (track.classList.contains("note")) {
+		track = track.parentElement
+	}
 
+	let trackEditor = track.parentElement.parentElement
 	// Check if track is is edit mode
 	if (!trackEditor.classList.contains("edit")) {
 		return
@@ -149,10 +154,10 @@ function noteClick(event) {
 		return
 	}
 
-	if (trackMode == "track-mode-select") {
-		samplers[trackContainer.getAttribute("track-id")].triggerAttackRelease(getNoteSound(notePosY),  ((60 / tempo) * currentNoteWidth) + "n")
+	let note = event.target
+	if (trackMode == "track-mode-add") {
+		samplers[trackContainer.getAttribute("track-id")].triggerAttackRelease(getNoteSound(note.getAttribute("notepos").split(";")[1]), (60 / tempo) * note.getAttribute("notewidth"))
 	} else if (trackMode == "track-mode-remove") {
-		let note = event.target
 		let track = note.parentElement
 		let trackEditor = track.parentElement.parentElement
 
@@ -172,10 +177,12 @@ function noteMouseDown(event) {
 
 	if (trackMode == "track-mode-select") {
 		note = event.target
+		note.style.pointerEvents = "none"
 		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
 		document.getElementById("song-input").value = JSON.stringify(song)
 	} else if (trackMode == "track-mode-resize") {
 		note = event.target
+		note.style.pointerEvents = "none"
 		currentNoteWidth = note.getAttribute("notewidth")
 		resizePosX = notePosX
 		delete song.tracks[trackEditor.getAttribute("track-id")].notes[note.getAttribute("notepos")]
@@ -489,6 +496,7 @@ function volumeChanged(event) {
 	let percentage = (volumeX / volumeBar.clientWidth) * 100
 
 	volume = MIN_VOLUME + ((percentage / 100) * (MAX_VOLUME - MIN_VOLUME))
+	document.cookie = "volume=" + volume + ";"
 	volumeLine.style.width = percentage + "%"
 
 	for (const id in samplers) {
@@ -510,6 +518,7 @@ function volumeScroll(event) {
 		volume = clamp(volume - 5, MIN_VOLUME, MAX_VOLUME)
 	}
 
+	document.cookie = "volume=" + volume + ";"
 	volumeLine.style.width = ((volume - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME)) * 100 + "%"
 	for (const id in samplers) {
 		samplers[id].volume.value = volume
@@ -530,6 +539,7 @@ function toggleMute() {
 		volumeLine.style.width = ((volume - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME)) * 100 + "%"
 	}
 
+	document.cookie = "volume=" + volume + ";"
 	for (const id in samplers) {
 		samplers[id].volume.value = volume
 	}
@@ -821,10 +831,11 @@ export var SongLoader = {
 			let track = trackEditor.querySelector(".track")
 			for (const noteId in trackData.notes) {
 				let noteData = trackData.notes[noteId]
-				let noteWidth = noteData.split(",")[1]
+				let noteWidth = noteData.split(",")[1] * (tempo / 60)
 				let notePos = noteId.split(";")
 
 				let songNote = newNote(notePos[0], notePos[1], noteWidth, track.getAttribute("note-color"))
+				songNote.style.top = ((notePos[1] * noteHeightPx) / ((noteNumber + 2) * noteHeightPx)) * 100 + "%"
 				songNote.style.pointerEvents = "all"
 
 				// Add note to song data
