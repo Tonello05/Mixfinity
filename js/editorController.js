@@ -20,7 +20,16 @@ const MIN_VOLUME = -50
 const MAX_VOLUME = 15
 const NOTE_NAMES = ["B", "A#", "A", "G#", "G", "F#", "F", "E", "D#", "D", "C#", "C"]
 
-const volumeCookie = document.cookie.split("volume=")[1].split(";")[0]
+const cookies = document.cookie.split(";")
+
+let volumeCookie
+cookies.forEach(cookie => {
+	let cookiePairs = cookie.split("=")
+
+	if (cookiePairs[0] == "volume") {
+		volumeCookie = cookiePairs[1]
+	}
+});
 
 const noteHeightPx = 17
 const noteWidthPx = 20
@@ -43,7 +52,6 @@ let note
 let currentNoteWidth = 1
 let notePosX = 0, notePosY = 0
 let resizePosX = 0
-let noteMoved = false
 
 // Instruments
 let samplers = {}	// key-value array of all instruments and their name
@@ -128,12 +136,6 @@ function mouseMovement(event) {
 	if (trackMode == "track-mode-add" || trackMode == "track-mode-select") {
 		note.style.left = (notePosX * noteWidthPx) + "px"
 		note.style.top = (notePosY * noteHeightPx) + "px"
-
-		if (note.getAttribute("notepos").split(";")[0] == notePosX) {
-			noteMoved = false
-		} else {
-			noteMoved = true
-		}
 
 		// Return if note has not changed key
 		if (oldNotePosY == notePosY) {
@@ -334,10 +336,10 @@ function newTrackDiv(instrumentName) {
 	trackContainer.classList.add("track-container")
 	h3.innerText = instrumentName
 	editTrack.classList.add("edit-track", "interactable")
-	editTrackSpan.classList.add("material-symbols-rounded")
+	editTrackSpan.classList.add("material-icons-round")
 	editTrackSpan.innerText = "edit"
 	closeTrack.classList.add("close-track", "interactable")
-	closeTrackSpan.classList.add("material-symbols-rounded")
+	closeTrackSpan.classList.add("material-icons-round")
 	closeTrackSpan.innerText = "close"
 	lineContainer.classList.add("line-container")
 	hSeperator.classList.add("hseparator")
@@ -499,7 +501,7 @@ function volumeChanged(event) {
 	let percentage = (volumeX / volumeBar.clientWidth) * 100
 
 	volume = MIN_VOLUME + ((percentage / 100) * (MAX_VOLUME - MIN_VOLUME))
-	document.cookie = "volume=" + volume + ";"
+	document.cookie = "volume=" + volume + "; expires=" + new Date("3000").toUTCString() + ";"
 	volumeLine.style.width = percentage + "%"
 
 	for (const id in samplers) {
@@ -521,7 +523,7 @@ function volumeScroll(event) {
 		volume = clamp(volume - 5, MIN_VOLUME, MAX_VOLUME)
 	}
 
-	document.cookie = "volume=" + volume + ";"
+	document.cookie = "volume=" + volume + "; expires=" + new Date("3000").toUTCString() + ";"
 	volumeLine.style.width = ((volume - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME)) * 100 + "%"
 	for (const id in samplers) {
 		samplers[id].volume.value = volume
@@ -542,7 +544,7 @@ function toggleMute() {
 		volumeLine.style.width = ((volume - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME)) * 100 + "%"
 	}
 
-	document.cookie = "volume=" + volume + ";"
+	document.cookie = "volume=" + volume + "; expires=" + new Date("3000").toUTCString() + ";"
 	for (const id in samplers) {
 		samplers[id].volume.value = volume
 	}

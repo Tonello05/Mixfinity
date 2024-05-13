@@ -90,7 +90,7 @@ function fillSongContainer(jsonSongs) {
 		for (let i = 0; i < activeStars; i++) {
 			let starButton = document.createElement("button")
 			let starSpan = document.createElement("span")
-			starSpan.classList.add("interactable", "material-symbols-rounded")
+			starSpan.classList.add("interactable", "material-icons-round")
 			starSpan.innerText = "star"
 
 			starButton.appendChild(starSpan)
@@ -100,7 +100,7 @@ function fillSongContainer(jsonSongs) {
 		for (let i = 0; i < 5 - activeStars; i++) {
 			let starButton = document.createElement("button")
 			let starSpan = document.createElement("span")
-			starSpan.classList.add("interactable", "material-symbols-rounded", "unactive")
+			starSpan.classList.add("interactable", "material-icons-round", "unactive")
 			starSpan.innerText = "star"
 
 			starButton.appendChild(starSpan)

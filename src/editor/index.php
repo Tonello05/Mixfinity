@@ -6,7 +6,8 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+	<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Material+Icons+Round'>
 	<link rel="stylesheet" href="../../css/formStyle.css">
 	<link rel="stylesheet" href="../../css/editorStyle.css">
 	<link rel="shortcut icon" href="../../img/logo.png" type="image/x-icon">
@@ -94,7 +95,7 @@
 
 					?>
 					<div class="interactable instrument" id="<?php echo $name;?>" folder_url="<?php echo $folderUrl;?>" notes="<?php echo $notes;?>">
-						<span class="material-symbols-rounded">music_note</span>
+						<span class="material-icons-round">music_note</span>
 						<h3><?php echo $name;?></h3>
 					</div>
 					<?php
@@ -109,42 +110,42 @@
 				<div class="bar-left">
 					<!-- Music controls -->
 					<button id="toStart" class="interactable">
-						<span class="material-symbols-rounded">keyboard_double_arrow_left</span>
+						<span class="material-icons-round">keyboard_double_arrow_left</span>
 					</button>
 					<button id="play" class="interactable">
-						<span class="material-symbols-rounded">play_arrow</span>
+						<span class="material-icons-round">play_arrow</span>
 					</button>
 					<button id="pause" class="interactable">
-						<span class="material-symbols-rounded">pause</span>
+						<span class="material-icons-round">pause</span>
 					</button>
 					<button id="stop" class="interactable">
-						<span class="material-symbols-rounded">stop</span>
+						<span class="material-icons-round">stop</span>
 					</button>
 					<button id="toEnd" class="interactable">
-						<span class="material-symbols-rounded">double_arrow</span>
+						<span class="material-icons-round">double_arrow</span>
 					</button>
 					<!-- End music controls -->
 				</div>
 				<div class="bar-center">
 					<!-- Track editor controls -->
 					<button id="track-mode-select" class="interactable">
-						<span class="material-symbols-rounded">arrow_selector_tool</span>
+						<span class="material-icons-round">pan_tool_alt</span>
 					</button>
 					<button id="track-mode-add" class="selected interactable">
-						<span class="material-symbols-rounded">music_note</span>
+						<span class="material-icons-round">music_note</span>
 					</button>
 					<button id="track-mode-resize" class="interactable">
 						<span class="material-symbols-rounded">width</span>
 					</button>
 					<button id="track-mode-remove" class="interactable">
-						<span class="material-symbols-rounded">delete</span>
+						<span class="material-icons-round">delete</span>
 					</button>
 					<!-- End track editor controls -->
 				</div>
 				<div class="bar-right">
 					<!-- Volume -->
 					<button id="volume-button" class="interactable">
-						<span class="material-symbols-rounded interactable">volume_up</span>
+						<span class="material-icons-round interactable">volume_up</span>
 					</button>
 					<div class="interactable" id="volume-bar">
 						<div id="volume"></div>
@@ -159,7 +160,7 @@
 				</div>
 				<div id="timeline">
 					<div class="playhead">
-						<span class="arrow material-symbols-rounded">arrow_drop_down</span>
+						<span class="arrow material-icons-round">arrow_drop_down</span>
 						<div class="line"></div>
 					</div>
 				</div>
@@ -193,7 +194,7 @@
 							<div id="genre-header" class="select-header interactable">
 								<div class="select-text">Select song genre</div>
 								<div class="select-arrow">
-									<span id="genre-arrow" class="material-symbols-rounded">expand_more</span>
+									<span id="genre-arrow" class="material-icons-round">expand_more</span>
 								</div>
 							</div>
 							<div id="genre-select" hidden class="select-container">
@@ -237,7 +238,7 @@
 				<div class="top">
 					<h2>Credits</h2>
 					<button id="close-credits" class="close-credits interactable">
-						<span class="material-symbols-rounded">close</span>
+						<span class="material-icons-round">close</span>
 					</button>
 				</div>
 				<h3>Developers</h3>
