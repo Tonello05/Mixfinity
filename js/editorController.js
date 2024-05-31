@@ -315,15 +315,11 @@ function removeTrack(event) {
 	delete samplers[trackId]
 }
 
-function newTrackDiv(instrumentName) {
+function newTrackDiv(instrumentName, blocked) {
 	let trackEditor = document.createElement("div")
 	let trackEditorTop = document.createElement("div")
 	let trackContainer = document.createElement("div")
 	let h3 = document.createElement("h3")
-	let editTrack = document.createElement("button")
-	let editTrackSpan = document.createElement("span")
-	let closeTrack = document.createElement("button")
-	let closeTrackSpan = document.createElement("span")
 	let lineContainer = document.createElement("div")
 	let hSeperator = document.createElement("div")
 	let playHead = document.createElement("div")
@@ -335,12 +331,6 @@ function newTrackDiv(instrumentName) {
 	trackEditorTop.classList.add("track-editor-top")
 	trackContainer.classList.add("track-container")
 	h3.innerText = instrumentName
-	editTrack.classList.add("edit-track", "interactable")
-	editTrackSpan.classList.add("material-icons-round")
-	editTrackSpan.innerText = "edit"
-	closeTrack.classList.add("close-track", "interactable")
-	closeTrackSpan.classList.add("material-icons-round")
-	closeTrackSpan.innerText = "close"
 	lineContainer.classList.add("line-container")
 	hSeperator.classList.add("hseparator")
 	playHead.classList.add("playhead")
@@ -357,18 +347,34 @@ function newTrackDiv(instrumentName) {
 	lineContainer.style.width = songDuration + "px"
 	playHead.style.transform = "translateX(" + timelineX + "px"
 
-	editTrack.addEventListener("click", toggleEditMode)
-	closeTrack.addEventListener("click", removeTrack)
 	track.addEventListener("mousemove", mouseMovement)
 	track.addEventListener("mousedown", trackMouseDown)
 	track.addEventListener("mouseup", mouseUp)
 
-	editTrack.appendChild(editTrackSpan)
-	closeTrack.appendChild(closeTrackSpan)
-
 	trackEditorTop.appendChild(h3)
-	trackEditorTop.appendChild(editTrack)
-	trackEditorTop.appendChild(closeTrack)
+
+	if (!blocked) {
+		let editTrack = document.createElement("button")
+		let editTrackSpan = document.createElement("span")
+		let closeTrack = document.createElement("button")
+		let closeTrackSpan = document.createElement("span")
+
+		editTrack.classList.add("edit-track", "interactable")
+		editTrackSpan.classList.add("material-icons-round")
+		editTrackSpan.innerText = "edit"
+		closeTrack.classList.add("close-track", "interactable")
+		closeTrackSpan.classList.add("material-icons-round")
+		closeTrackSpan.innerText = "close"
+
+		editTrack.addEventListener("click", toggleEditMode)
+		closeTrack.addEventListener("click", removeTrack)
+
+		editTrack.appendChild(editTrackSpan)
+		closeTrack.appendChild(closeTrackSpan)
+
+		trackEditorTop.appendChild(editTrack)
+		trackEditorTop.appendChild(closeTrack)
+	}
 
 	playHead.appendChild(line)
 	lineContainer.appendChild(playHead)
@@ -772,6 +778,19 @@ function toggleCredits() {
 	}
 }
 
+function toggleTutorial() {
+	const tutorialPanel = document.getElementById("tutorial-panel")
+
+	tutorialPanel.hidden = !tutorialPanel.hidden
+	if (!tutorialPanel.hidden) {
+		header.classList.add("blurred")
+		container.classList.add("blurred")
+	} else {
+		header.classList.remove("blurred")
+		container.classList.remove("blurred")
+	}
+}
+
 tempoBox.addEventListener("change", tempoChanged)
 tempoBox.addEventListener("focusin", () => {tempoBoxSelected = true})
 tempoBox.addEventListener("focusout", () => {tempoBoxSelected = false})
@@ -808,6 +827,8 @@ document.getElementById("exit").addEventListener("click", () => {location.href =
 document.getElementById("genre-submit").addEventListener("click", publishSong)
 document.getElementById("credits").addEventListener("click", toggleCredits)
 document.getElementById("close-credits").addEventListener("click", toggleCredits)
+document.getElementById("tutorial").addEventListener("click", toggleTutorial)
+document.getElementById("close-tutorial").addEventListener("click", toggleTutorial)
 
 document.addEventListener("keypress", onKeyPress)
 
@@ -834,7 +855,7 @@ export var SongLoader = {
 			song.tracks[trackIdCounter] = {"instrument": instrumentName, "notes": {}}
 
 			// Add trackEditor to trackEditorContainer
-			let trackEditor = newTrackDiv(instrumentName)
+			let trackEditor = newTrackDiv(instrumentName, true)
 			trackEditorContainer.appendChild(trackEditor)
 			tracks = document.querySelectorAll('.track');
 			playheads = document.querySelectorAll(".playhead")

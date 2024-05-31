@@ -49,6 +49,7 @@ body {
 	background-color: rgb(30, 30, 30);
 	overflow-x: hidden;
 	overflow-y: hidden;
+	height: 100vh;
 }
 
 h3 {
@@ -109,32 +110,41 @@ header button:hover {
 	z-index: 3;
 }
 
-body .container {
+.container {
 	display: grid;
 	width: 98%;
-	height: 50%;
+	height: 100%;
 	margin-left: 20px;
 	gap: 1.8rem;
 	grid-template-columns: 12rem auto;
 }
 
 aside {
+	height: calc(100% - 50px);
+}
+
+.instrument-container {
+	background-color: rgb(20, 20, 20);
+	height: calc(100% - 55px);
+	position: relative;
+	top: 20px;
+	border-radius: 15px;
+	overflow-y: scroll;
+}
+
+.instrument-container::-webkit-scrollbar-track,
+.instrument-container::-webkit-scrollbar-thumb {
+	background: none;
+}
+
+.instrument-bar {
+	display: flex;
+	flex-direction: column;
+	padding: 5px 0 5px 0;
 	height: 100%;
 }
 
-aside .instrument-bar {
-	display: flex;
-	flex-direction: column;
-	background-color: rgb(20, 20, 20);
-	padding: 5px 0 5px 0;
-	border-radius: 15px;
-	height: 95%;
-	position: relative;
-	top: 20px;
-	overflow-y: auto;
-}
-
-aside .instrument-bar div {
+.instrument-bar div {
 	display: flex;
 	align-items: center;
 	height: 32px;
@@ -143,13 +153,17 @@ aside .instrument-bar div {
 	margin-left: 2rem;
 }
 
+.instrument {
+	flex-shrink: 0;
+}
+
 .instrument * {
 	pointer-events: none;
 }
 
 /* TODO fix container not scaling properly on Y */
 .main-container {
-	height: 100%;
+	height: calc(100% - 50px);
 	width: 100%;
 	overflow-y: hidden;
 }
@@ -301,22 +315,24 @@ aside .instrument-bar div {
 }
 
 #track-editor-container {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
 	position: relative;
 	top: 20px;
-	height: 85vh;
+	height: calc(100% - 165px);
 	padding-right: 15px;
-	overflow-y: auto;
+	overflow-y: scroll;
 }
 
 .track-editor {
 	position: relative;
-	/* display: grid; */
 	border-radius: 15px;
-	margin-bottom: 20px;
 	background-color: rgb(20, 20, 20);
 	width: 100%;
 	height: 200px;
 	overflow: hidden;
+	flex-shrink: 0;
 }
 
 .track-editor h3 {
@@ -324,7 +340,7 @@ aside .instrument-bar div {
 }
 
 .edit {
-	height: 785px;
+	height: 100%;
 }
 
 .track-editor-top {
@@ -630,4 +646,61 @@ aside .instrument-bar div {
 .devs div {
 	padding-top: 2px;
 	padding-bottom: 2px;
+}
+
+.tutorial-panel {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	position: absolute;
+	top: 0;
+	background-color: rgb(0, 0, 0, .15);
+	height: 100%;
+	width: 100%;
+	z-index: 10;
+}
+
+.tutorial-container {
+	background-color: rgb(20, 20, 20);
+	width: 70vw;
+	height: 80vh;
+	border-radius: 15px;
+	padding: 15px;
+}
+
+.tutorial-scroll {
+	width: 100%;
+	height: calc(100% - 28px);
+	padding-right: 5px;
+	overflow-y: scroll;
+}
+
+.tutorial-container .divisor {
+	height: 2px;
+	background-color: rgb(50, 50, 50);
+	margin-top: 15px;
+}
+
+.tutorial-scroll h3 {
+	font-size: 1.2rem;
+	margin-top: 10px;
+	margin-top: 10px;
+}
+
+.section {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.tutorial-scroll img {
+	width: 40%;
+	height: min-content;
+	border-radius: 15px;
+}
+
+.tutorial-top {
+	display: flex;
+	justify-content: space-between;
 }
