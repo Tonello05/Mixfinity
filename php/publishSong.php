@@ -8,7 +8,7 @@ $genreId = $_POST["genre"];
 $song = $_POST["songData"];
 $remixId = $_POST["remixId"];
 
-if (isset($_POST["remixId"])) {
+if (!empty($remixId)) {
 	$sql = "INSERT INTO music (title, data, id_user, id_genre, id_music_remix)
 			VALUES('$title', '$song', $userId, $genreId, $remixId)";
 } else {
@@ -17,10 +17,9 @@ if (isset($_POST["remixId"])) {
 }
 
 if($conn->query($sql) === TRUE){
-	echo "<br/>music added!";
+	echo json_encode(array("success" => true));
 }else{
-	echo "<br/>An Error has occurred!";
-	echo $conn->error;
+	echo json_encode(array($conn->error, empty($remixId), isset($remixId)));
 }
 
 $conn->close()

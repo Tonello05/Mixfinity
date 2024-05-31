@@ -729,12 +729,14 @@ function publishSong() {
 	xhr.onload = function () {
 		if (xhr.status === 200) {
 			// If request is successfull move to user page
-			let response = xhr.responseText
-			if (response == "<br/>music added!") {
+			let response = JSON.parse(xhr.responseText)
+			if (response.success) {
 				location.href = "../user/"
 			} else {
 				showError("Issue while saving song to database.", 4)
-				console.log(response);
+				response.errors.forEach(issue => {
+					console.log(issue)
+				});
 			}
 		} else {
 			console.error('Issue with server connection:', xhr.statusText);
