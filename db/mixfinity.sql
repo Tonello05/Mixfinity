@@ -172,6 +172,7 @@ CREATE TABLE `updates` (
 INSERT INTO `updates` (`id`, `title`, `text`, `date`) VALUES
 (1, 'New Instruments', 'New instruments have been added, allowing you to create new and more profesional music. Instruments added: Bass electric, Bassoon, Cello, Clarinet, Contrabass, Flute, French horn, Guitar acoustic, Guitar electric, Guitar nylon, Harmonium, Harp, Organ, Piano, Saxophone, Trombone, Trumpet, Tuba, Violin, Xylophone.', '2024-05-10'),
 (2, 'Released!', 'MIxfinity has now been released and can be enjoyed be anyone, anywhere they want and anytime', '2024-05-12');
+(3, 'Tutorial Added','A new tutorial has beed added to the music editor page allowing new users to understand and start producing new music quickly. The editor has also been improved and some issues have been fixed.', '2024-05-31')
 
 -- --------------------------------------------------------
 
